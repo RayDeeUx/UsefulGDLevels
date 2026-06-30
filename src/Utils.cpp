@@ -416,7 +416,7 @@ namespace Utils {
 			const std::string& disclaimer = completedLists > 0 ?
 				fmt::format(
 					" (<cg>{}</c> completed, <co>{}</c> remaining)",
-					completedLists, std::abs(numLists - completedLists)
+					completedLists, std::abs(static_cast<int>(numLists - completedLists))
 				) : "";
 			const std::string& completion = std::ranges::find(completedLevels.begin(), completedLevels.end(), levelIDBeingInvestigated) == completedLevels.end() ?
 				fmt::format(

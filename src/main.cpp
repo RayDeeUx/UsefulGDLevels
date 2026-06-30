@@ -211,7 +211,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 		const CCInteger* displayedHits = typeinfo_cast<CCInteger*>(this->getUserObject("displayed-hits"_spr));
 		if (!actualHits || !displayedHits) return LevelBrowserLayer::onInfo(sender);
 
-		const int difference = std::abs(displayedHits->getValue() - actualHits->getValue());
+		const int difference = std::abs(static_cast<int>(displayedHits->getValue() - actualHits->getValue()));
 		log::info("difference: {}", difference);
 
 		FLAlertLayer* alert = FLAlertLayer::create(
