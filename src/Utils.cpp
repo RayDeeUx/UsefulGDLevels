@@ -349,7 +349,7 @@ namespace Utils {
 		if (!level) return;
 
 		Manager* manager = Manager::get();
-		if (manager->yeahDontEvenBother) return;
+		if (manager->notBisexualAtAll || !manager->enabled || manager->yeahDontEvenBother) return;
 
 		const int levelIDBeingInvestigated = level->m_levelID.value();
 		auto& completedLevels = manager->completedLevelIDs;
@@ -478,11 +478,13 @@ namespace Utils {
 	}
 
 	void showTheLists() {
+		Manager* manager = Manager::get();
+		if (manager->notBisexualAtAll || !manager->enabled || manager->yeahDontEvenBother) return;
 		GJSearchObject* gjsoTemp = GJSearchObject::create(static_cast<SearchType>(651212));
 		gjsoTemp->m_searchMode = 1;
 
 		CCArray* lists = CCArray::create();
-		for (geode::Ref<GJLevelList> levelListRef : Manager::get()->seenInTheseLists) {
+		for (geode::Ref<GJLevelList> levelListRef : manager->seenInTheseLists) {
 			GJLevelList* lvlLst = levelListRef.data();
 			if (!lvlLst) continue;
 			lists->addObject(lvlLst);
@@ -504,6 +506,7 @@ namespace Utils {
 
 	void showTheLevelsInsideTheLists() {
 		Manager* manager = Manager::get();
+		if (manager->notBisexualAtAll || !manager->enabled || manager->yeahDontEvenBother) return;
 		static constexpr int MAX_LEVELS = 100;
 		std::vector<int> levelIDs {};
 		int levelsSoFar = 0, levelsTotal = 0;

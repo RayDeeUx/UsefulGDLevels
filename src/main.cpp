@@ -64,6 +64,17 @@ $on_game(Exiting) {
 	(void) Mod::get()->saveData();
 }
 
+$on_game(Loaded) {
+	if (Loader::get()->isModLoaded("cvolton.betterinfo")) return;
+	Manager* manager = Manager::get();
+	manager->notBisexualAtAll = true;
+	manager->yeahDontEvenBother = true;
+	manager->enabled = false;
+	Mod::get()->setLoggingEnabled(true);
+	log::error("\nBetterInfo is not installed!\nTHIS IS ***__NOT__*** A BUG. YOU ARE ***__REQUIRED__*** TO HAVE BETTERINFO LOADED FOR THE USEFULGDLISTS MOD TO WORK.\nTHIS IS ***__NOT__*** A BUG. YOU ARE ***__REQUIRED__*** TO HAVE BETTERINFO LOADED FOR THE USEFULGDLISTS MOD TO WORK.");
+	Mod::get()->setLoggingEnabled(false); // this should not be a comment during production code!
+}
+
 $on_game(ModsLoaded) {
 	Mod::get()->setLoggingEnabled(false); // this should not be a comment during production code!
 	Mod::get()->setSettingValue<bool>("forciblyShowEverything", false);
@@ -72,16 +83,6 @@ $on_game(ModsLoaded) {
 	GameManager::get()->schedule(schedule_selector(CloseableAlertShameOnYou::trackConfirmationPopupScheduler));
 
 	Manager* manager = Manager::get();
-	if (!Loader::get()->isModLoaded("cvolton.betterinfo")) {
-		manager->notBisexualAtAll = true;
-		manager->yeahDontEvenBother = true;
-		manager->enabled = false;
-		Mod::get()->setLoggingEnabled(true);
-		log::error("\nBetterInfo is not installed!\nTHIS IS ***__NOT__*** A BUG. YOU ARE ***__REQUIRED__*** TO HAVE BETTERINFO LOADED FOR THE USEFULGDLISTS MOD TO WORK.\nTHIS IS ***__NOT__*** A BUG. YOU ARE ***__REQUIRED__*** TO HAVE BETTERINFO LOADED FOR THE USEFULGDLISTS MOD TO WORK.");
-		Mod::get()->setLoggingEnabled(false); // this should not be a comment during production code!
-		return;
-	}
-
 	manager->enabled = Utils::modEnabled();
 	manager->addButtonToLevelCells = Utils::getBool("addButtonToLevelCells");
 	manager->ignoreCompactViewCells = Utils::getBool("ignoreCompactViewCells");
@@ -91,22 +92,28 @@ $on_game(ModsLoaded) {
 	Utils::fetchFromTheColon();
 
 	listenForSettingChanges<bool>("enabled", [](const bool enabledNew) {
+		if (Manager::get()->notBisexualAtAll) return;
 		Manager::get()->enabled = enabledNew;
 	});
 	listenForSettingChanges<bool>("addButtonToLevelCells", [](const bool addButtonToLevelCellsNew) {
+		if (Manager::get()->notBisexualAtAll) return;
 		Manager::get()->addButtonToLevelCells = addButtonToLevelCellsNew;
 	});
 	listenForSettingChanges<bool>("ignoreCompactViewCells", [](const bool ignoreCompactViewCellsNew) {
+		if (Manager::get()->notBisexualAtAll) return;
 		Manager::get()->ignoreCompactViewCells = ignoreCompactViewCellsNew;
 	});
 	listenForSettingChanges<bool>("openAsLevelLists", [](const bool openAsLevelListsNew) {
+		if (Manager::get()->notBisexualAtAll) return;
 		Manager::get()->openAsLevelLists = openAsLevelListsNew;
 	});
 	listenForSettingChanges<std::string>("maxDifficulty", [](const std::string& maxDifficultyNew) {
+		if (Manager::get()->notBisexualAtAll) return;
 		Manager::get()->maxDifficulty = Manager::wellGeodeSDKStringSettingsAreReallyLackingIMO(maxDifficultyNew);
 	});
 	listenForSettingChanges<bool>("forciblyShowEverything", [](const bool forciblyShowEverythingNew) {
 		Manager* managerLambda = Manager::get();
+		if (Manager::get()->notBisexualAtAll) return;
 		if (managerLambda->fromButtonTwoInConfirm) return;
 		managerLambda->forciblyShowEverything = false;
 		managerLambda->fromEitherButton = false;
@@ -171,6 +178,7 @@ over with
 class $modify(MyGJLevelList, GJLevelList) {
 	static GJLevelList* create(cocos2d::CCDictionary* dict) {
 		GJLevelList* ret = GJLevelList::create(dict);
+		if (Manager::get()->notBisexualAtAll) return ret;
 		if (ret->m_listType == GJLevelType::Editor || ret->m_listType == GJLevelType::Main || ret->m_listID < 1) return ret;
 		/*
 		for (auto obj : CCArrayExt(dict->allKeys())) {
@@ -193,6 +201,7 @@ class $modify(MyPlayLayer, PlayLayer) {
 	void levelComplete() {
 		PlayLayer::levelComplete();
 		Manager* manager = Manager::get();
+		if (manager->notBisexualAtAll) return;
 		if (m_isTestMode || m_isPracticeMode || !m_level || m_level->m_levelType == GJLevelType::Editor || m_level->m_levelType == GJLevelType::Main || m_level->m_normalPercent.value() < 100 || m_level->m_levelID.value() < 128) return;
 		auto& completed = manager->completedLevelIDs;
 		if (std::ranges::find(completed.begin(), completed.end(), m_level->m_levelID.value()) != completed.end()) return;
@@ -203,7 +212,7 @@ class $modify(MyPlayLayer, PlayLayer) {
 #include <Geode/modify/LevelBrowserLayer.hpp>
 class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 	void onInfo(CCObject* sender) {
-		if (!Manager::get()->enabled || Manager::get()->yeahDontEvenBother) return LevelBrowserLayer::onInfo(sender);
+		if (Manager::get()->notBisexualAtAll || !Manager::get()->enabled || Manager::get()->yeahDontEvenBother) return LevelBrowserLayer::onInfo(sender);
 		if (!this->getUserFlag("useful-gd-lists-mode"_spr)) return LevelBrowserLayer::onInfo(sender);
 		if (!this->getUserObject("actual-hits"_spr) || !this->getUserObject("displayed-hits"_spr)) return LevelBrowserLayer::onInfo(sender);
 
@@ -237,14 +246,14 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 #include <Geode/modify/LevelInfoLayer.hpp>
 class $modify(MyLevelInfoLayer, LevelInfoLayer) {
 	void onUsefulLevels(CCObject* sender) {
-		if (!Manager::get()->enabled || !sender || sender->getTag() != 20260628 || !this->m_level) return;
+		if (Manager::get()->notBisexualAtAll || !Manager::get()->enabled || !sender || sender->getTag() != 20260628 || !this->m_level) return;
 		Utils::showUsefulLevelInfo(this->m_level);
 	}
 	bool init(GJGameLevel* level, bool challenge) {
 		if (!LevelInfoLayer::init(level, challenge)) return false;
 
 		Manager* manager = Manager::get();
-		if (!manager->enabled || level->m_levelType == GJLevelType::Editor || level->m_levelType == GJLevelType::Main || manager->yeahDontEvenBother) return true;
+		if (manager->notBisexualAtAll || !manager->enabled || level->m_levelType == GJLevelType::Editor || level->m_levelType == GJLevelType::Main || manager->yeahDontEvenBother) return true;
 
 		CCNode* leftSideMenu = this->getChildByID("left-side-menu");
 		if (!leftSideMenu) return true;
@@ -276,18 +285,18 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
 class $modify(MyLevelCell, LevelCell) {
 	static void onModify(auto& self) {
 		Mod* rll = Loader::get()->getInstalledMod("raydeeux.revisedlevelcells");
-		if (!rll || !rll->isOrWillBeEnabled()) (void) self.setHookPriorityBeforePost("LevelCell::loadFromLevel", rll);
+		if (rll && rll->isOrWillBeEnabled()) (void) self.setHookPriorityBeforePost("LevelCell::loadFromLevel", rll);
 		else (void) self.setHookPriority("LevelCell::loadFromLevel", -3999);
 	}
 	void onUsefulLists(CCObject* sender) {
-		if (!Manager::get()->enabled || !sender || sender->getTag() != 20260627) return;
+		if (Manager::get()->notBisexualAtAll || !Manager::get()->enabled || !sender || sender->getTag() != 20260627) return;
 		Utils::showUsefulLevelInfo(this->m_level);
 	}
 	void loadFromLevel(GJGameLevel* level) {
 		LevelCell::loadFromLevel(level);
 
 		Manager* manager = Manager::get();
-		if (!manager->enabled || !manager->addButtonToLevelCells || (manager->ignoreCompactViewCells && this->m_compactView) || level->m_levelType == GJLevelType::Editor || level->m_levelType == GJLevelType::Main || !this->m_mainMenu || manager->yeahDontEvenBother) return;
+		if (manager->notBisexualAtAll || !manager->enabled || !manager->addButtonToLevelCells || (manager->ignoreCompactViewCells && this->m_compactView) || level->m_levelType == GJLevelType::Editor || level->m_levelType == GJLevelType::Main || !this->m_mainMenu || manager->yeahDontEvenBother) return;
 
 		auto& levelIDInfoMap = manager->levelIDInfoMap;
 		if (!levelIDInfoMap.contains(level->m_levelID.value())) return;
@@ -308,7 +317,7 @@ class $modify(MyLevelCell, LevelCell) {
 class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 	bool init(int type) {
 		if (!LevelSearchLayer::init(type)) return false;
-		if (!Manager::get()->enabled || Manager::get()->yeahDontEvenBother) return true;
+		if (Manager::get()->notBisexualAtAll || !Manager::get()->enabled || Manager::get()->yeahDontEvenBother) return true;
 
 		CCNode* levelSearchShortcuts = this->getChildByID("other-filter-menu");
 		if (!levelSearchShortcuts) return true;
@@ -329,7 +338,7 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 		if (!sender || sender->getTag() != 20260626) return;
 
 		Manager* manager = Manager::get();
-		if (!manager->enabled) return;
+		if (manager->notBisexualAtAll || !manager->enabled) return;
 		if (manager->yeahDontEvenBother) {
 			FLAlertLayer* alert = FLAlertLayer::create("Yeah, about that...", "There's no data available to use right now. Try again later.", "I Understand");
 			Utils::makeUndraggable(alert);
