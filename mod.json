@@ -1,0 +1,97 @@
+{
+	"geode": "5.7.1",
+	"gd": {
+		"win": "2.2081",
+		"mac": "2.2081",
+		"ios": "2.2081",
+		"android": "2.2081"
+	},
+	"id": "raydeeux.usefulgdlevels",
+	"name": "UsefulGDLevels",
+	"version": "v1.0.0",
+	"developer": "RayDeeUx",
+	"description": "Colon's Useful GD Levels site, but integrated into GD.",
+	"repository": "https://codeberg.org/RayDeeUx/UsefulGDLevels",
+	"tags": ["enhancement", "online", "utility"],
+	"settings": {
+		"master-switch-header": {
+			"name": "UsefulGDLists Master Toggle",
+			"type": "title"
+		},
+		"enabled": {
+			"name": "Enabled",
+			"description": "Toggles the mod.",
+			"type": "bool",
+			"default": true
+		},
+		"shortcut-level-cells-header": {
+			"name": "\"Useful\" Level Information Button",
+			"type": "title"
+		},
+		"addButtonToLevelCells": {
+			"name": "Add Button To Level Cells",
+			"description": "Adds the button for viewing \"useful level\" info inside level cells.",
+			"type": "bool",
+			"default": true,
+			"enable-if": "enabled"
+		},
+		"ignoreCompactViewCells": {
+			"name": "Ignore Compact Mode Level Cells",
+			"description": "For people who have too many buttons in level cells browsing levels.",
+			"type": "bool",
+			"default": false,
+			"enable-if": "enabled && addButtonToLevelCells"
+		},
+		"misc-header": {
+			"name": "Misc. Settings",
+			"type": "title"
+		},
+		"maxDifficulty": {
+			"name": "Maximum Level Difficulty (Exclusive)",
+			"description": "For people who are allergic to Extreme Demons and such.\n\n\"Exclusive\" means that levels at or above the difficulty you set in this setting will not be shown when searching for useful levels.",
+			"type": "string",
+			"default": "None (Disabled)",
+			"one-of": [
+				"None (Disabled)",
+				"Auto", "Easy", "Normal", "Hard", "Harder", "Insane",
+				"Easy Demon", "Medium Demon", "Hard Demon", "Insane Demon", "Extreme Demon"
+			],
+			"enable-if": "enabled"
+		},
+		"openAsLevelLists": {
+			"name": "\"Go To Lists\" Shows Level Lists Instead Of Individual Levels",
+			"description": "When pressing \"Go To Lists\" for levels whose lists you haven't fully completed, show the list of level lists instead of showing the individual levels from those lists.",
+			"type": "bool",
+			"default": true,
+			"enable-if": "enabled"
+		},
+		"dangerous-header": {
+			"name": "Dangerous Settings",
+			"type": "title"
+		},
+		"forciblyShowEverything": {
+			"name": "Forcibly Show All Levels (READ!!!)",
+			"description": "# <c-ff0000>***__ENABLING THIS OPTION CAN GET YOU RATE-LIMITED FROM ROBTOP'S SERVERS. THIS OPTION MAY ALSO FREEZE YOUR GAME FOR A FEW SECONDS.__***</c>\n\nForce the mod to show all levels that are considered \"useful\" for list grinding.\n\nFor your safety, this setting resets during every bootup, and has a confirmation popup.\n\n\n\n\n\n\n",
+			"type": "bool",
+			"default": false,
+			"enable-if": "enabled"
+		}
+	},
+	"resources": {
+		"sprites": [
+			"logo.png"
+		]
+	},
+	"dependencies": {
+		"geode.node-ids": ">=1.21.0",
+		"cvolton.betterinfo": ">=4.4.6"
+	},
+	"issues": {
+		"url": "https://discord.com/channels/911701438269386882/1205523212444639292",
+		"info": "Ping me <cl>(@erymanthus)</c> in the Geode SDK Discord server's <cl>#help</c> channel if you need help. <cr>DMs are NOT accepted.</c>"
+	},
+	"links": {
+		"community": "https://discord.gg/WqZBYdBWZW",
+		"homepage": "https://discord.com/channels/822510988409831486/1206371881222144020"
+	}
+}
