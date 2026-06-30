@@ -89,16 +89,20 @@ namespace Utils {
 			label->setZOrder(theAlert->m_buttonMenu->getZOrder() + 1);
 			label->setPosition(theAlert->m_buttonMenu->getPosition());
 			label->setColor({255, 0, 0});
+
 			label->runAction(CCSequence::create(CCTintTo::create(countdownLength, 0, 255, 0), CCRemoveSelf::create(), nullptr));
+
 			CCArray* actions = CCArray::create();
 			for (int i = 0; i < static_cast<int>(countdownLength); ++i) {
 				actions->addObject(CCScaleTo::create(0.f, 1.5f));
 				actions->addObject(CCEaseExponentialOut::create(CCScaleTo::create(1.f, 1.f)));
 			}
+
 			CCArray* moreActions = CCArray::create();
 			for (int j = static_cast<int>(countdownLength); j > 0; --j) {
 				moreActions->addObject(CCLabelSetString::create(1.f, fmt::format("STOP AND READ!!! ({})", j).c_str()));
 			}
+
 			label->runAction(CCSequence::create(actions));
 			label->runAction(CCSequence::create(moreActions));
 		}
@@ -122,6 +126,7 @@ namespace Utils {
 	}
 
 	void fetchFromTheColon() {
+		if (Manager::get()->notBisexualAtAll) return;
 		geode::utils::web::WebRequest request = geode::utils::web::WebRequest();
 		Manager::get()->listener.spawn(
 			request.get("https://gdcolon.com/usefulgdlevels/levels.json"),
@@ -131,6 +136,7 @@ namespace Utils {
 
 	void parseColonResponse(const geode::utils::web::WebResponse& response) {
 		Manager* manager = Manager::get();
+		if (manager->notBisexualAtAll) return;
 
 		if (!response.ok() || response.code() != 200) {
 			log::info("gdcolon.com request failed: {}", response.code());
@@ -480,6 +486,7 @@ namespace Utils {
 	void showTheLists() {
 		Manager* manager = Manager::get();
 		if (manager->notBisexualAtAll || !manager->enabled || manager->yeahDontEvenBother) return;
+
 		GJSearchObject* gjsoTemp = GJSearchObject::create(static_cast<SearchType>(651212));
 		gjsoTemp->m_searchMode = 1;
 
@@ -507,19 +514,23 @@ namespace Utils {
 	void showTheLevelsInsideTheLists() {
 		Manager* manager = Manager::get();
 		if (manager->notBisexualAtAll || !manager->enabled || manager->yeahDontEvenBother) return;
+
 		static constexpr int MAX_LEVELS = 100;
 		std::vector<int> levelIDs {};
 		int levelsSoFar = 0, levelsTotal = 0;
 		const auto& levelLists = manager->levelLists;
+
 		for (int listID : manager->listIDsForIteration) {
 			if (!levelLists.contains(listID)) continue;
 			GJLevelList* theLevelList = levelLists.at(listID).data();
+
 			#ifdef GEODE_IS_ANDROID
 			auto levelIDsFromTheList = theLevelList->m_levels;
 			#else
 			auto levelIDsFromTheList = static_cast<std::vector<int>>(theLevelList->m_levels);
 			#endif
 			if (theLevelList->completedLevels() < theLevelList->m_levelsToClaim) levelsTotal += levelIDsFromTheList.size();
+
 			for (const int levelIDFromList : levelIDsFromTheList) {
 				if (levelsSoFar >= MAX_LEVELS) break;
 				if (std::ranges::find(levelIDs.begin(), levelIDs.end(), levelIDFromList) != levelIDs.end()) continue;
@@ -528,6 +539,7 @@ namespace Utils {
 			}
 		}
 		const std::string& levelIDsJoined = fmt::format("{}", fmt::join(levelIDs.begin(), levelIDs.end(), ","));CCScene* scene = CCScene::create();
+
 		GJSearchObject* gjso = GJSearchObject::create(SearchType::Type19, levelIDsJoined);
 		LevelBrowserLayer* lbl = LevelBrowserLayer::create(gjso);
 
