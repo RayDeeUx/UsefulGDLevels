@@ -506,9 +506,9 @@ namespace Utils {
 				GJLevelList* lvlLstB = b.data();
 				const bool claimedA = lvlLstA ? GameStatsManager::get()->hasClaimedListReward(lvlLstA) : false;
 				const bool claimedB = lvlLstB ? GameStatsManager::get()->hasClaimedListReward(lvlLstB) : false;
-				const uint rankA = lvlLstA && !claimedA ? std::clamp<uint>(lvlLstA->m_levelsToClaim - lvlLstA->completedLevels(), 0, lvlLstA->m_levelsToClaim) : 0;
-				const uint rankB = lvlLstB && !claimedB ? std::clamp<uint>(lvlLstB->m_levelsToClaim - lvlLstB->completedLevels(), 0, lvlLstB->m_levelsToClaim) : 0;
-				if (rankA != rankB) return rankA > rankB;
+				const uint rankA = lvlLstA && !claimedA ? std::clamp<uint>(lvlLstA->m_levelsToClaim - lvlLstA->completedLevels(), 0, lvlLstA->m_levelsToClaim) : std::numeric_limits<uint>::max();
+				const uint rankB = lvlLstB && !claimedB ? std::clamp<uint>(lvlLstB->m_levelsToClaim - lvlLstB->completedLevels(), 0, lvlLstB->m_levelsToClaim) : std::numeric_limits<uint>::max();
+				if (rankA != rankB) return rankA < rankB;
 				const uint rankC = lvlLstA && claimedA ? std::clamp<uint>(lvlLstA->totalLevels() - lvlLstA->completedLevels(), 0, lvlLstA->totalLevels()) : lvlLstA->m_diamonds;
 				const uint rankD = lvlLstB && claimedB ? std::clamp<uint>(lvlLstB->totalLevels() - lvlLstB->completedLevels(), 0, lvlLstB->totalLevels()) : lvlLstB->m_diamonds;
 				if (rankC != rankD) return rankC < rankD;
