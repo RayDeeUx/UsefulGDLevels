@@ -266,12 +266,24 @@ namespace Utils {
 			const size_t numberOfLists = listIDs.size();
 			manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn.push_back({levelID, numberOfLists});
 
+			const bool canParseGauntlet = levelEntry.contains("gauntlet") && levelEntry["gauntlet"].contains("name") && levelEntry["gauntlet"].contains("index") && levelEntry["gauntlet"]["name"].asString().isOk() && levelEntry["gauntlet"]["index"].asInt().isOk();
+			const std::string& gauntletName = canParseGauntlet ? levelEntry["gauntlet"]["name"].asString().unwrap() : "";
+			const intmax_t gauntletIndex = canParseGauntlet ? levelEntry["gauntlet"]["index"].asInt().unwrapOr(-1) : -1;
+
+			const bool canParseMapPack = levelEntry.contains("mapPack") && levelEntry["mapPack"].contains("name") && levelEntry["mapPack"].contains("index") && levelEntry["mapPack"]["name"].asString().isOk() && levelEntry["mapPack"]["index"].asInt().isOk();
+			const std::string& mapPackName = canParseMapPack ? fmt::format("{} Gauntlet", levelEntry["mapPack"]["name"].asString().unwrap()) : "";
+			const intmax_t mapPackIndex = canParseMapPack ? levelEntry["mapPack"]["index"].asInt().unwrapOr(-1) : -1;
+
 			manager->levelIDInfoMap[levelID] = UsefulLevel {
 				.difficulty = difficultyIndex,
 				.starCount = stars,
 				.length = Manager::levelLengthToIntegerFetch(attemptedLength.unwrap()),
 				.numberOfLists = numberOfLists,
-				.listIDs = std::move(listIDs)
+				.listIDs = std::move(listIDs),
+				.gauntletName = gauntletName,
+				.gauntletIndex = gauntletIndex,
+				.mapPackName = mapPackName,
+				.mapPackIndex = mapPackIndex,
 			};
 		}
 
@@ -342,6 +354,65 @@ namespace Utils {
 					.diamonds = diamonds,
 					.levelsRequired = levelsRequired,
 					.numberOfLevels = numberOfLevels,
+					.levelIDs = std::move(levelIDs)
+				}
+			);
+		}
+
+		for (const matjson::Value& apparentlyMapPacksExistHereToo : unwrappedLists) {
+			if (!apparentlyMapPacksExistHereToo.contains("mapPack") || !apparentlyMapPacksExistHereToo.contains("id") || !apparentlyMapPacksExistHereToo.contains("name") || !apparentlyMapPacksExistHereToo.contains("levels") || !apparentlyMapPacksExistHereToo.contains("stars") || !apparentlyMapPacksExistHereToo.contains("coins") || !apparentlyMapPacksExistHereToo.contains("difficulty")) continue;
+
+			if (!apparentlyMapPacksExistHereToo["mapPack"].asBool().unwrapOr(false)) continue;
+
+			auto name = apparentlyMapPacksExistHereToo["name"].asString();
+			if (name.isErr() || name.unwrap().empty()) continue;
+
+			auto attemptedLevelArray = apparentlyMapPacksExistHereToo["levels"].asArray();
+			if (attemptedLevelArray.isErr()) continue;
+
+			auto mapPackID = apparentlyMapPacksExistHereToo["id"].asInt().unwrapOr(-1);
+			if (mapPackID < 0) continue;
+
+			auto stars = apparentlyMapPacksExistHereToo["stars"].asInt().unwrapOr(-1);
+			if (stars < 0) continue;
+
+			auto coins = apparentlyMapPacksExistHereToo["coins"].asInt().unwrapOr(-1);
+			if (coins < 0) continue;
+
+			auto difficulty = apparentlyMapPacksExistHereToo["difficulty"].asString();
+			if (difficulty.isErr() || difficulty.unwrap().empty()) continue;
+
+			auto levels = attemptedLevelArray.unwrap();
+			if (levels.empty()) continue;
+
+			std::vector<int> levelIDs {};
+
+			for (const matjson::Value& levelIDEntry : levels) {
+				const auto attemptedString = levelIDEntry.asString();
+				if (attemptedString.isErr()) continue;
+
+				auto s = attemptedString.unwrap();
+				if (s.empty()) continue;
+
+				auto n = geode::utils::numFromString<int>(s).unwrapOr(-1);
+				if (n < 1) continue;
+
+				levelIDs.push_back(n);
+			}
+
+			const size_t numberOfLevels = levelIDs.size();
+			const std::string& unwrappedDifficulty = difficulty.unwrap();
+
+			manager->mapPackInfoList.push_back(
+				WeAllFuckingHateMapPacks {
+					.mapPackID = mapPackID,
+					.name = name.unwrap(),
+					.difficulty = Manager::wellGeodeSDKStringSettingsAreReallyLackingIMO(unwrappedDifficulty),
+					.difficultyIconKey = Manager::wellColonNeverGaveDifficultyIndiciesToTheLevelListsSoHereWeAre(unwrappedDifficulty),
+					.difficultyIconColor = Manager::wellColonNeverGaveDifficultyIndiciesToTheLevelListsSoHereWeAreForColors(unwrappedDifficulty),
+					.stars = stars,
+					.coins = coins,
+					.numberOfNevels = numberOfLevels,
 					.levelIDs = std::move(levelIDs)
 				}
 			);

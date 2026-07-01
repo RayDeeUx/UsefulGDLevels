@@ -95,18 +95,34 @@ struct UsefulLevel {
 	int length;
 	size_t numberOfLists;
 	std::vector<int> listIDs;
+	std::string_view gauntletName = "";
+	intmax_t gauntletIndex = -1;
+	std::string_view mapPackName = "";
+	intmax_t mapPackIndex = -1;
 };
 
 struct UsefulList {
 	intmax_t listID;
 	std::string name;
 	std::string author;
-	int difficulty;
+	uint8_t difficulty;
 	std::string_view difficultyIconKey;
 	std::string_view difficultyIconColor;
 	intmax_t diamonds;
 	intmax_t levelsRequired;
 	size_t numberOfLevels;
+	std::vector<int> levelIDs;
+};
+
+struct WeAllFuckingHateMapPacks {
+	intmax_t mapPackID; // non-canonical map pack ID, since robtop doesn't store IDs for these guys it's just in the order they appear in when inside GD
+	std::string name;
+	uint8_t difficulty;
+	std::string_view difficultyIconKey;
+	std::string_view difficultyIconColor;
+	intmax_t stars;
+	intmax_t coins;
+	size_t numberOfNevels;
 	std::vector<int> levelIDs;
 };
 
@@ -202,6 +218,7 @@ public:
 	std::vector<intmax_t> completedLevelIDs = {};
 
 	std::unordered_map<intmax_t, UsefulLevel> levelIDInfoMap = {};
+	std::vector<WeAllFuckingHateMapPacks> mapPackInfoList = {};
 	std::vector<UsefulList> listIDInfoList = {};
 
 	std::vector<std::pair<int, size_t>> colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn {};
