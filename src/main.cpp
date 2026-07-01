@@ -88,6 +88,7 @@ $on_game(ModsLoaded) {
 	manager->ignoreCompactViewCells = Utils::getBool("ignoreCompactViewCells");
 	manager->openAsLevelLists = Utils::getBool("openAsLevelLists");
 	manager->maxDifficulty = Manager::wellGeodeSDKStringSettingsAreReallyLackingIMO(Utils::getString("maxDifficulty"));
+	manager->showShortcutOnSearchLayerType = Manager::showShortcutOnSearchLayerTypeArrayFetch(Utils::getString("showShortcutOnSearchLayerType"));
 
 	Utils::fetchFromTheColon();
 
@@ -105,6 +106,9 @@ $on_game(ModsLoaded) {
 	});
 	listenForSettingChanges<std::string>("maxDifficulty", [](const std::string& maxDifficultyNew) {
 		Manager::get()->maxDifficulty = Manager::wellGeodeSDKStringSettingsAreReallyLackingIMO(maxDifficultyNew);
+	});
+	listenForSettingChanges<std::string>("showShortcutOnSearchLayerType", [](const std::string& showShortcutOnSearchLayerTypeNew) {
+		Manager::get()->showShortcutOnSearchLayerType = Manager::showShortcutOnSearchLayerTypeArrayFetch(showShortcutOnSearchLayerTypeNew);
 	});
 	listenForSettingChanges<bool>("forciblyShowEverything", [](const bool forciblyShowEverythingNew) {
 		Manager* managerLambda = Manager::get();
@@ -317,6 +321,12 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 
 		Manager* manager = Manager::get();
 		if (manager->notBisexualAtAll || !manager->enabled || manager->yeahDontEvenBother) return true;
+
+		if (manager->showShortcutOnSearchLayerType != 0) {
+			if (manager->showShortcutOnSearchLayerType > 2) return true;
+			if (manager->showShortcutOnSearchLayerType == 2 && m_type != 1) return true;
+			if (manager->showShortcutOnSearchLayerType == 1 && m_type != 0) return true;
+		}
 
 		CCNode* levelSearchShortcuts = this->getChildByID("other-filter-menu");
 		if (!levelSearchShortcuts) return true;

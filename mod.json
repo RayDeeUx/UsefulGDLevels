@@ -8,7 +8,7 @@
 	},
 	"id": "raydeeux.usefulgdlevels",
 	"name": "UsefulGDLevels",
-	"version": "v1.0.2",
+	"version": "v1.0.3",
 	"developer": "RayDeeUx",
 	"description": "Colon's Useful GD Levels site, but integrated into GD.",
 	"repository": "https://codeberg.org/RayDeeUx/UsefulGDLevels",
@@ -63,6 +63,19 @@
 			"description": "When pressing \"Go To Lists\" for levels whose lists you haven't fully completed, show the list of level lists instead of showing the individual levels from those lists.",
 			"type": "bool",
 			"default": true,
+			"enable-if": "enabled"
+		},
+		"showShortcutOnSearchLayerType": {
+			"name": "Show Useful Levels Shortcut On...",
+			"description": "Choose the type of search layer you want to show the shortcut button on.",
+			"type": "string",
+			"default": "Both Search Layers",
+			"one-of": [
+				"Both Search Layers",
+				"Level Search Layer Only",
+				"List Search Layer Only",
+				"No Search Layers"
+			],
 			"enable-if": "enabled"
 		},
 		"dangerous-header": {

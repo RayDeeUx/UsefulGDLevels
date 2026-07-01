@@ -157,6 +157,13 @@ public:
 		{"Extreme Demon",	10}
 	}};
 
+	inline static std::array<std::pair<std::string_view, uint8_t>, 4> showShortcutOnSearchLayerTypeArray{{
+		{"Both Search Layers",		0},
+		{"Level Search Layer Only",	1},
+		{"List Search Layer Only",	2},
+		{"No Search Layers",		3}
+	}};
+
 	bool yeahDontEvenBother = false;
 
 	bool fromEitherButton = false;
@@ -175,6 +182,7 @@ public:
 	bool ignoreCompactViewCells = false;
 
 	uint8_t maxDifficulty = 0;
+	uint8_t showShortcutOnSearchLayerType = 0;
 
 	std::vector<intmax_t> completedListIDs = {};
 	std::vector<intmax_t> completedLevelIDs = {};
@@ -228,5 +236,12 @@ public:
 			if (diff == difficulty) return derp;
 		}
 		return 11;
+	}
+
+	static uint8_t showShortcutOnSearchLayerTypeArrayFetch(const std::string_view oneOf) {
+		for (const auto& [us, unsignedInt] : Manager::get()->showShortcutOnSearchLayerTypeArray) {
+			if (oneOf == us) return unsignedInt;
+		}
+		return 0;
 	}
 };
