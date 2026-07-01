@@ -535,23 +535,24 @@ namespace Utils {
 			#endif
 			if (theLevelList->completedLevels() < theLevelList->m_levelsToClaim) levelsTotal += levelIDsFromTheList.size();
 
-			if (!manager->sortLevelIDsByNumberOfListsTheyAppearIn) {
-				for (const int levelIDFromList : levelIDsFromTheList) {
-					if (levelsSoFar >= MAX_LEVELS) break;
-					if (std::ranges::find(levelIDs.begin(), levelIDs.end(), levelIDFromList) != levelIDs.end()) continue;
-					levelIDs.push_back(levelIDFromList);
-					levelsSoFar++;
-				}
-			} else {
-				for (const auto& [levelIDFromSortedByFrequency, _] : manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn) {
-					if (levelsSoFar >= MAX_LEVELS) break;
-					if (std::ranges::find(manager->completedLevelIDs.begin(), manager->completedLevelIDs.end(), levelIDFromSortedByFrequency) != manager->completedLevelIDs.end()) continue;
-					if (std::ranges::find(levelIDsFromTheList.begin(), levelIDsFromTheList.end(), levelIDFromSortedByFrequency) == levelIDsFromTheList.end()) continue;
-					levelIDs.push_back(static_cast<int>(levelIDFromSortedByFrequency));
-					levelsSoFar++;
-				}
+			for (const int levelIDFromList : levelIDsFromTheList) {
+				if (levelsSoFar >= MAX_LEVELS) break;
+				if (std::ranges::find(levelIDs.begin(), levelIDs.end(), levelIDFromList) != levelIDs.end()) continue;
+				levelIDs.push_back(levelIDFromList);
+				levelsSoFar++;
 			}
 		}
+
+		if (manager->sortLevelIDsByNumberOfListsTheyAppearIn) {
+			std::sort(levelIDs.begin(), levelIDs.end(), [](const int& a, const int& b) {
+				const Manager* managerLambda = Manager::get();
+				const size_t rankA = managerLambda->levelIDInfoMap.contains(a) ? managerLambda->levelIDInfoMap.at(a).numberOfLists : 0;
+				const size_t rankB = managerLambda->levelIDInfoMap.contains(b) ? managerLambda->levelIDInfoMap.at(b).numberOfLists : 0;
+				if (rankA != rankB) return rankA > rankB;
+				return a > b;
+			});
+		}
+
 		const std::string& levelIDsJoined = fmt::format("{}", fmt::join(levelIDs.begin(), levelIDs.end(), ","));CCScene* scene = CCScene::create();
 
 		GJSearchObject* gjso = GJSearchObject::create(SearchType::Type19, levelIDsJoined);
