@@ -570,8 +570,7 @@ namespace Utils {
 					static_cast<std::string>(level->m_levelName),
 					structuredBindingsCanFuckRightTheFuckOff.mapPackIndex,
 					mapPack.difficultyIconColor, static_cast<std::string>(level->m_levelName),
-					mapPack.difficultyIconColor, static_cast<std::string>(level->m_levelName),
-					structuredBindingsCanFuckRightTheFuckOff.mapPackName,
+					mapPack.difficultyIconColor, structuredBindingsCanFuckRightTheFuckOff.mapPackName,
 					mapPack.stars, mapPack.coins
 				);
 				break;
