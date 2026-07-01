@@ -562,7 +562,13 @@ namespace Utils {
 				const size_t rankA = managerLambda->levelIDInfoMap.contains(a) ? managerLambda->levelIDInfoMap.at(a).numberOfLists : 0;
 				const size_t rankB = managerLambda->levelIDInfoMap.contains(b) ? managerLambda->levelIDInfoMap.at(b).numberOfLists : 0;
 				if (rankA != rankB) return rankA > rankB;
-				return managerLambda->levelIDInfoMap.at(a).difficulty < managerLambda->levelIDInfoMap.at(b).difficulty;
+				const intmax_t rankC = managerLambda->levelIDInfoMap.contains(a) ? managerLambda->levelIDInfoMap.at(a).starCount : 10;
+				const intmax_t rankD = managerLambda->levelIDInfoMap.contains(b) ? managerLambda->levelIDInfoMap.at(b).starCount : 10;
+				if (rankC != rankD) return rankC > rankD;
+				const intmax_t rankE = managerLambda->levelIDInfoMap.contains(a) ? managerLambda->levelIDInfoMap.at(a).difficulty : 10;
+				const intmax_t rankF = managerLambda->levelIDInfoMap.contains(b) ? managerLambda->levelIDInfoMap.at(b).difficulty : 10;
+				if (rankE != rankF) return rankE > rankF;
+				return a < b;
 			});
 		}
 
