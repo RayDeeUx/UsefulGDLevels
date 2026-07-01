@@ -1,4 +1,6 @@
 # UsefulGDLevels Changelog
+## v1.1.1
+- Revised tiebreaker system introduced in options from v1.1.0.
 ## v1.1.0
 - Sort levels by list frequency in descending order.
 - Sort level lists by completion progress in descending order.
