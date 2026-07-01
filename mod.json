@@ -66,8 +66,15 @@
 			"enable-if": "enabled"
 		},
 		"sortLevelIDsByNumberOfListsTheyAppearIn": {
-			"name": "Sort Levels By Number Of Lists They Appear In",
-			"description": "Self-explanatory.",
+			"name": "Sort Levels By Level List Frequency",
+			"description": "Sort levels by level list frequency in descending order (10, 9, 8, 7, etc...).",
+			"type": "bool",
+			"default": false,
+			"enable-if": "enabled"
+		},
+		"sortListIDsByNumberOfListsTheyAppearIn": {
+			"name": "Sort Level Lists By Progress to Completion",
+			"description": "Sort level lists by progress to completion based on percentage in descending order (10, 9, 8, 7, etc...).",
 			"type": "bool",
 			"default": false,
 			"enable-if": "enabled"

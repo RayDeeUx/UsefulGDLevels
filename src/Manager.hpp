@@ -180,6 +180,7 @@ public:
 	bool openAsLevelLists = false;
 	bool addButtonToLevelCells = false;
 	bool ignoreCompactViewCells = false;
+	bool sortListIDsByNumberOfListsTheyAppearIn = false;
 	bool sortLevelIDsByNumberOfListsTheyAppearIn = false;
 
 	uint8_t maxDifficulty = 0;

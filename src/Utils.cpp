@@ -494,8 +494,21 @@ namespace Utils {
 		GJSearchObject* gjsoTemp = GJSearchObject::create(static_cast<SearchType>(651212));
 		gjsoTemp->m_searchMode = 1;
 
+		auto& seenInTheseLists = manager->seenInTheseLists;
+
+		if (manager->sortListIDsByNumberOfListsTheyAppearIn) {
+			std::sort(seenInTheseLists.begin(), seenInTheseLists.end(), [](geode::Ref<GJLevelList>& a, geode::Ref<GJLevelList>& b) {
+				GJLevelList* lvlLstA = a.data();
+				GJLevelList* lvlLstB = b.data();
+				const uint rankA = lvlLstA && !GameStatsManager::get()->hasClaimedListReward(lvlLstA) ? std::clamp<uint>(lvlLstA->m_levelsToClaim - lvlLstA->completedLevels(), 0, lvlLstA->m_levelsToClaim) : 0;
+				const uint rankB = lvlLstB && !GameStatsManager::get()->hasClaimedListReward(lvlLstB) ? std::clamp<uint>(lvlLstB->m_levelsToClaim - lvlLstB->completedLevels(), 0, lvlLstB->m_levelsToClaim) : 0;
+				if (rankA != rankB) return rankA > rankB;
+				return ((lvlLstA ? std::clamp<uint>(lvlLstA->totalLevels() - lvlLstA->completedLevels(), 0, lvlLstA->totalLevels()) : 0)) > ((lvlLstB ? std::clamp<uint>(lvlLstB->totalLevels() - lvlLstB->completedLevels(), 0, lvlLstB->totalLevels()) : 0));
+			});
+		}
+
 		CCArray* lists = CCArray::create();
-		for (geode::Ref<GJLevelList> levelListRef : manager->seenInTheseLists) {
+		for (geode::Ref<GJLevelList> levelListRef : seenInTheseLists) {
 			GJLevelList* lvlLst = levelListRef.data();
 			if (!lvlLst) continue;
 			lists->addObject(lvlLst);

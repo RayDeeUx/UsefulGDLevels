@@ -87,6 +87,7 @@ $on_game(ModsLoaded) {
 	manager->addButtonToLevelCells = Utils::getBool("addButtonToLevelCells");
 	manager->ignoreCompactViewCells = Utils::getBool("ignoreCompactViewCells");
 	manager->openAsLevelLists = Utils::getBool("openAsLevelLists");
+	manager->sortListIDsByNumberOfListsTheyAppearIn = Utils::getBool("sortListIDsByNumberOfListsTheyAppearIn");
 	manager->sortLevelIDsByNumberOfListsTheyAppearIn = Utils::getBool("sortLevelIDsByNumberOfListsTheyAppearIn");
 	manager->maxDifficulty = Manager::wellGeodeSDKStringSettingsAreReallyLackingIMO(Utils::getString("maxDifficulty"));
 	manager->showShortcutOnSearchLayerType = Manager::showShortcutOnSearchLayerTypeArrayFetch(Utils::getString("showShortcutOnSearchLayerType"));
@@ -104,6 +105,9 @@ $on_game(ModsLoaded) {
 	});
 	listenForSettingChanges<bool>("openAsLevelLists", [](const bool openAsLevelListsNew) {
 		Manager::get()->openAsLevelLists = openAsLevelListsNew;
+	});
+	listenForSettingChanges<bool>("sortListIDsByNumberOfListsTheyAppearIn", [](const bool sortListIDsByNumberOfListsTheyAppearInNew) {
+		Manager::get()->sortListIDsByNumberOfListsTheyAppearIn = sortListIDsByNumberOfListsTheyAppearInNew;
 	});
 	listenForSettingChanges<bool>("sortLevelIDsByNumberOfListsTheyAppearIn", [](const bool sortLevelIDsByNumberOfListsTheyAppearInNew) {
 		Manager::get()->sortLevelIDsByNumberOfListsTheyAppearIn = sortLevelIDsByNumberOfListsTheyAppearInNew;
