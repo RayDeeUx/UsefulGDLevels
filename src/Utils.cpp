@@ -502,16 +502,16 @@ namespace Utils {
 
 		if (manager->sortListIDsByNumberOfListsTheyAppearIn) {
 			std::sort(seenInTheseLists.begin(), seenInTheseLists.end(), [](geode::Ref<GJLevelList>& a, geode::Ref<GJLevelList>& b) {
-				const uint uIntMax = std::numeric_limits<uint>::max();
+				const int uIntMax = std::numeric_limits<int>::max();
 				GJLevelList* lvlLstA = a.data();
 				GJLevelList* lvlLstB = b.data();
 				const bool claimedA = lvlLstA ? GameStatsManager::get()->hasClaimedListReward(lvlLstA) : false;
 				const bool claimedB = lvlLstB ? GameStatsManager::get()->hasClaimedListReward(lvlLstB) : false;
-				const uint rankA = lvlLstA && !claimedA ? std::clamp<uint>(lvlLstA->m_levelsToClaim - lvlLstA->completedLevels(), 0, lvlLstA->m_levelsToClaim) : uIntMax;
-				const uint rankB = lvlLstB && !claimedB ? std::clamp<uint>(lvlLstB->m_levelsToClaim - lvlLstB->completedLevels(), 0, lvlLstB->m_levelsToClaim) : uIntMax;
+				const int rankA = lvlLstA && !claimedA ? std::clamp<int>(lvlLstA->m_levelsToClaim - lvlLstA->completedLevels(), 0, lvlLstA->m_levelsToClaim) : uIntMax;
+				const int rankB = lvlLstB && !claimedB ? std::clamp<int>(lvlLstB->m_levelsToClaim - lvlLstB->completedLevels(), 0, lvlLstB->m_levelsToClaim) : uIntMax;
 				if (rankA != rankB) return rankA < rankB;
-				const uint rankC = lvlLstA && claimedA ? std::clamp<uint>(lvlLstA->totalLevels() - lvlLstA->completedLevels(), 0, lvlLstA->totalLevels()) : lvlLstA ? lvlLstA->m_diamonds : uIntMax;
-				const uint rankD = lvlLstB && claimedB ? std::clamp<uint>(lvlLstB->totalLevels() - lvlLstB->completedLevels(), 0, lvlLstB->totalLevels()) : lvlLstB ? lvlLstB->m_diamonds : uIntMax;
+				const int rankC = lvlLstA && claimedA ? std::clamp<int>(lvlLstA->totalLevels() - lvlLstA->completedLevels(), 0, lvlLstA->totalLevels()) : lvlLstA ? lvlLstA->m_diamonds : uIntMax;
+				const int rankD = lvlLstB && claimedB ? std::clamp<int>(lvlLstB->totalLevels() - lvlLstB->completedLevels(), 0, lvlLstB->totalLevels()) : lvlLstB ? lvlLstB->m_diamonds : uIntMax;
 				if (rankC != rankD) return rankC < rankD;
 				return (lvlLstA ? lvlLstA->m_downloads : uIntMax) < (lvlLstB ? lvlLstA->m_downloads : uIntMax);
 			});
