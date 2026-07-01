@@ -84,6 +84,7 @@ $on_game(ModsLoaded) {
 	}
 
 	manager->enabled = Utils::modEnabled();
+	manager->logging = Utils::getBool("logging");
 	manager->addButtonToLevelCells = Utils::getBool("addButtonToLevelCells");
 	manager->ignoreCompactViewCells = Utils::getBool("ignoreCompactViewCells");
 	manager->openAsLevelLists = Utils::getBool("openAsLevelLists");
@@ -93,9 +94,15 @@ $on_game(ModsLoaded) {
 	manager->showShortcutOnSearchLayerType = Manager::showShortcutOnSearchLayerTypeArrayFetch(Utils::getString("showShortcutOnSearchLayerType"));
 
 	Utils::fetchFromTheColon();
+	Mod::get()->setLoggingEnabled(manager->logging);
 
 	listenForSettingChanges<bool>("enabled", [](const bool enabledNew) {
 		Manager::get()->enabled = enabledNew;
+	});
+
+	listenForSettingChanges<bool>("logging", [](const bool loggingNew) {
+		Manager::get()->logging = loggingNew;
+		Mod::get()->setLoggingEnabled(loggingNew);
 	});
 	listenForSettingChanges<bool>("addButtonToLevelCells", [](const bool addButtonToLevelCellsNew) {
 		Manager::get()->addButtonToLevelCells = addButtonToLevelCellsNew;

@@ -102,6 +102,11 @@
 			"type": "bool",
 			"default": false,
 			"enable-if": "enabled"
+		},
+		"logging": {
+			"name": "Logging",
+			"type": "bool",
+			"default": false
 		}
 	},
 	"resources": {

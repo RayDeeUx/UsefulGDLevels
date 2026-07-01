@@ -174,6 +174,8 @@ public:
 		{"Platformer",		6}
 	}};
 
+	bool logging = false;
+
 	bool yeahDontEvenBother = false;
 
 	bool fromEitherButton = false;
