@@ -290,7 +290,7 @@ namespace Utils {
 		std::sort(manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn.begin(), manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn.end(), [](const auto& a, const auto& b) { return a.second > b.second; });
 
 		for (const matjson::Value& listEntry : unwrappedLists) {
-			if (!listEntry.contains("id") || !listEntry.contains("name") || !listEntry.contains("author") || !listEntry.contains("levels") || !listEntry.contains("difficulty") || !listEntry.contains("diamonds") || !listEntry.contains("levelsRequired")) continue;
+			if (listEntry.contains("mapPack") || !listEntry.contains("id") || !listEntry.contains("name") || !listEntry.contains("author") || !listEntry.contains("levels") || !listEntry.contains("difficulty") || !listEntry.contains("diamonds") || !listEntry.contains("levelsRequired")) continue;
 
 			auto attemptedListIDString = listEntry["id"].asString();
 			if (attemptedListIDString.isErr()) continue;
