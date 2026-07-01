@@ -87,6 +87,7 @@ $on_game(ModsLoaded) {
 	manager->addButtonToLevelCells = Utils::getBool("addButtonToLevelCells");
 	manager->ignoreCompactViewCells = Utils::getBool("ignoreCompactViewCells");
 	manager->openAsLevelLists = Utils::getBool("openAsLevelLists");
+	manager->sortLevelIDsByNumberOfListsTheyAppearIn = Utils::getBool("sortLevelIDsByNumberOfListsTheyAppearIn");
 	manager->maxDifficulty = Manager::wellGeodeSDKStringSettingsAreReallyLackingIMO(Utils::getString("maxDifficulty"));
 	manager->showShortcutOnSearchLayerType = Manager::showShortcutOnSearchLayerTypeArrayFetch(Utils::getString("showShortcutOnSearchLayerType"));
 
@@ -103,6 +104,9 @@ $on_game(ModsLoaded) {
 	});
 	listenForSettingChanges<bool>("openAsLevelLists", [](const bool openAsLevelListsNew) {
 		Manager::get()->openAsLevelLists = openAsLevelListsNew;
+	});
+	listenForSettingChanges<bool>("sortLevelIDsByNumberOfListsTheyAppearIn", [](const bool sortLevelIDsByNumberOfListsTheyAppearInNew) {
+		Manager::get()->sortLevelIDsByNumberOfListsTheyAppearIn = sortLevelIDsByNumberOfListsTheyAppearInNew;
 	});
 	listenForSettingChanges<std::string>("maxDifficulty", [](const std::string& maxDifficultyNew) {
 		Manager::get()->maxDifficulty = Manager::wellGeodeSDKStringSettingsAreReallyLackingIMO(maxDifficultyNew);
@@ -359,14 +363,29 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 		static constexpr int MAX_LEVELS = 100;
 		int i = 0, total = 0;
 		std::vector<int> levelIDs {};
-		for (const auto& [levelID, info] : manager->levelIDInfoMap) {
-			total++;
-			if (std::ranges::find(manager->completedLevelIDs.begin(), manager->completedLevelIDs.end(), levelID) != manager->completedLevelIDs.end()) continue;
-			if (manager->maxDifficulty < 11 && static_cast<UsefulLevel>(info).difficulty >= manager->maxDifficulty) continue;
-			levelIDs.push_back(static_cast<int>(levelID));
-			if (manager->forciblyShowEverything) continue;
-			i++;
-			if (i > MAX_LEVELS - 1) break;
+		auto& levelIDInfoMap = manager->levelIDInfoMap;
+		if (!manager->sortLevelIDsByNumberOfListsTheyAppearIn) {
+			for (const auto& [levelID, info] : levelIDInfoMap) {
+				total++;
+				if (std::ranges::find(manager->completedLevelIDs.begin(), manager->completedLevelIDs.end(), levelID) != manager->completedLevelIDs.end()) continue;
+				if (manager->maxDifficulty < 11 && static_cast<UsefulLevel>(info).difficulty >= manager->maxDifficulty) continue;
+				levelIDs.push_back(static_cast<int>(levelID));
+				if (manager->forciblyShowEverything) continue;
+				i++;
+				if (i > MAX_LEVELS - 1) break;
+			}
+		} else {
+			for (const auto& [levelID, _] : manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn) {
+				if (!levelIDInfoMap.contains(levelID)) continue;;
+				total++;
+				auto& info = levelIDInfoMap.at(levelID);
+				if (std::ranges::find(manager->completedLevelIDs.begin(), manager->completedLevelIDs.end(), levelID) != manager->completedLevelIDs.end()) continue;
+				if (manager->maxDifficulty < 11 && static_cast<UsefulLevel>(info).difficulty >= manager->maxDifficulty) continue;
+				levelIDs.push_back(static_cast<int>(levelID));
+				if (manager->forciblyShowEverything) continue;
+				i++;
+				if (i > MAX_LEVELS - 1) break;
+			}
 		}
 		const std::string& levelIDsJoined = fmt::format("{}", fmt::join(levelIDs.begin(), levelIDs.end(), ","));
 

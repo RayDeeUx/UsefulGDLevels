@@ -180,6 +180,7 @@ public:
 	bool openAsLevelLists = false;
 	bool addButtonToLevelCells = false;
 	bool ignoreCompactViewCells = false;
+	bool sortLevelIDsByNumberOfListsTheyAppearIn = false;
 
 	uint8_t maxDifficulty = 0;
 	uint8_t showShortcutOnSearchLayerType = 0;
@@ -189,6 +190,8 @@ public:
 
 	std::unordered_map<intmax_t, UsefulLevel> levelIDInfoMap = {};
 	std::vector<UsefulList> listIDInfoList = {};
+
+	std::vector<std::pair<int, size_t>> colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn {};
 
 	std::vector<geode::Ref<GJLevelList>> seenInTheseLists {};
 	std::vector<int> listIDsForIteration {};

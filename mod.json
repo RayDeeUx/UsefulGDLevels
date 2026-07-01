@@ -65,6 +65,13 @@
 			"default": true,
 			"enable-if": "enabled"
 		},
+		"sortLevelIDsByNumberOfListsTheyAppearIn": {
+			"name": "Sort Levels By Number Of Lists They Appear In",
+			"description": "Self-explanatory.",
+			"type": "bool",
+			"default": false,
+			"enable-if": "enabled"
+		},
 		"showShortcutOnSearchLayerType": {
 			"name": "Show Useful Levels Shortcut On...",
 			"description": "Choose the type of search layer you want to show the shortcut button on.",

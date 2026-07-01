@@ -219,6 +219,7 @@ namespace Utils {
 
 		manager->date = -1;
 		manager->yeahDontEvenBother = false;
+		if (!manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn.empty()) manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn.clear();
 		if (!manager->completedLevelIDs.empty()) manager->completedLevelIDs.clear();
 		if (!manager->completedListIDs.empty()) manager->completedListIDs.clear();
 		if (!manager->levelIDInfoMap.empty()) manager->levelIDInfoMap.clear();
@@ -260,6 +261,7 @@ namespace Utils {
 			}
 
 			const size_t numberOfLists = listIDs.size();
+			manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn.push_back({levelID, numberOfLists});
 
 			manager->levelIDInfoMap[levelID] = UsefulLevel {
 				.difficulty = difficultyIndex,
@@ -268,6 +270,8 @@ namespace Utils {
 				.listIDs = std::move(listIDs)
 			};
 		}
+
+		std::sort(manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn.begin(), manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn.end(), [](const auto& a, const auto& b) { return a.second > b.second; });
 
 		for (const matjson::Value& listEntry : unwrappedLists) {
 			if (!listEntry.contains("id") || !listEntry.contains("name") || !listEntry.contains("author") || !listEntry.contains("levels") || !listEntry.contains("difficulty") || !listEntry.contains("diamonds") || !listEntry.contains("levelsRequired")) continue;
