@@ -322,7 +322,7 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 		Manager* manager = Manager::get();
 		if (manager->notBisexualAtAll || !manager->enabled || manager->yeahDontEvenBother) return true;
 
-		if (manager->showShortcutOnSearchLayerType != 0) {
+		if (manager->showShortcutOnSearchLayerType > 0) {
 			if (manager->showShortcutOnSearchLayerType > 2) return true;
 			if (manager->showShortcutOnSearchLayerType == 2 && m_type != 1) return true;
 			if (manager->showShortcutOnSearchLayerType == 1 && m_type != 0) return true;
