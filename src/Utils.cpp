@@ -547,6 +547,31 @@ namespace Utils {
 			listOfLevels += "\n";
 		}
 
+		std::string gauntletInfo = "";
+		if (!structuredBindingsCanFuckRightTheFuckOff.gauntletName.empty() && structuredBindingsCanFuckRightTheFuckOff.gauntletIndex > 0) {
+			gauntletInfo = fmt::format(
+				"\nThis level is also level #{} in the <cl>{} Gauntlet</c>!",
+				structuredBindingsCanFuckRightTheFuckOff.gauntletIndex,
+				structuredBindingsCanFuckRightTheFuckOff.gauntletName.data()
+			);
+		}
+
+		std::string mapPackInfo = "";
+		if (!structuredBindingsCanFuckRightTheFuckOff.mapPackName.empty() && structuredBindingsCanFuckRightTheFuckOff.mapPackIndex > 0) {
+			for (const WeAllFuckingHateMapPacks& mapPack : manager->mapPackInfoList) {
+				if (mapPack.name != structuredBindingsCanFuckRightTheFuckOff.mapPackName) continue;
+				mapPackInfo = fmt::format(
+					"\nThis level is also #{} in the <c-{}>{}</c> for "
+					"<cy>{}</c> [![stars](frame:GJ_sStarsIcon_001.png?scale=0.85)]</c> "
+					"and <cs>{}</c> [![stars](frame:GJ_coinsIcon_001.png?scale=0.5)]</c>!",
+					structuredBindingsCanFuckRightTheFuckOff.mapPackIndex, mapPack.difficultyIconColor,
+					structuredBindingsCanFuckRightTheFuckOff.mapPackName.data(),
+					mapPack.stars, mapPack.coins
+				);
+				break;
+			}
+		}
+
 		FLAlertLayer* info {};
 
 		if (completedLists != structuredBindingsCanFuckRightTheFuckOff.numberOfLists || (completedLists == structuredBindingsCanFuckRightTheFuckOff.numberOfLists && claimableLists > 0)) {
@@ -576,8 +601,9 @@ namespace Utils {
 			info = MDPopup::create(
 				static_cast<std::string>(level->m_levelName),
 				fmt::format(
-					"This level exists in <cl>{}</c> lists{}:\n{}{}\n{}",
-					numLists, disclaimer, listOfLevels, claimNow, completion
+					"This level exists in <cl>{}</c> lists{}:\n{}{}\n{}{}{}",
+					numLists, disclaimer, listOfLevels, claimNow, completion,
+					gauntletInfo, mapPackInfo
 				), "Alright!", manager->preventRecursion ? nullptr : (manager->openAsLevelLists ? "Go To Lists" : "Show Levels"), [](const bool buttonTwo) {
 					Manager* managerLambda = Manager::get();
 					if (!buttonTwo || !managerLambda->enabled || managerLambda->yeahDontEvenBother) {
@@ -603,8 +629,9 @@ namespace Utils {
 				static_cast<std::string>(level->m_levelName),
 				fmt::format(
 					"This level exists in <cl>{}</c> lists:\n{}\n"
-					"<cg>***You've already claimed all the***</c> <cl>***{}***</c> ![diamonds](frame:GJ_diamondsIcon_001.png?scale=0.5) <cg>***from these lists! Nice job!***</c>",
-					numLists, listOfLevels, numDiamonds
+					"<cg>***You've already claimed all the***</c> <cl>***{}***</c> ![diamonds](frame:GJ_diamondsIcon_001.png?scale=0.5) <cg>***from these lists! Nice job!***</c>{}{}",
+					numLists, listOfLevels, numDiamonds,
+					gauntletInfo, mapPackInfo
 				), "Nice!"
 			);
 		}
