@@ -500,15 +500,15 @@ namespace Utils {
 			return;
 		}
 
-		const auto&[difficulty, starCount, _, numberOfLists, listIDs] = levelIDInfoMap[levelIDBeingInvestigated];
-		const size_t numLists = numberOfLists;
+		const UsefulLevel& structuredBindingsCanFuckRightTheFuckOff = levelIDInfoMap[levelIDBeingInvestigated];
+		const size_t numLists = structuredBindingsCanFuckRightTheFuckOff.numberOfLists;
 		std::string listOfLevels = "";
 		int claimableDiamonds = 0;
 		intmax_t numDiamonds = 0;
 		int completedLists = 0;
 		int claimableLists = 0;
 
-		for (int listID : listIDs) {
+		for (int listID : structuredBindingsCanFuckRightTheFuckOff.listIDs) {
 			if (listID < 0 || listIDInfoMap.size() < listID) continue;
 
 			const UsefulList& listEntry = listIDInfoMap.at(listID);
@@ -549,7 +549,7 @@ namespace Utils {
 
 		FLAlertLayer* info {};
 
-		if (completedLists != numberOfLists || (completedLists == numberOfLists && claimableLists > 0)) {
+		if (completedLists != structuredBindingsCanFuckRightTheFuckOff.numberOfLists || (completedLists == structuredBindingsCanFuckRightTheFuckOff.numberOfLists && claimableLists > 0)) {
 			const std::string& disclaimer = completedLists > 0 ?
 				fmt::format(
 					" (<cg>{}</c> completed, <co>{}</c> remaining)",
