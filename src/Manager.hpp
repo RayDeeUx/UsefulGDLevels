@@ -92,6 +92,7 @@ using namespace geode::prelude;
 struct UsefulLevel {
 	intmax_t difficulty;
 	intmax_t starCount;
+	int length;
 	size_t numberOfLists;
 	std::vector<int> listIDs;
 };
@@ -162,6 +163,15 @@ public:
 		{"Level Search Layer Only",	1},
 		{"List Search Layer Only",	2},
 		{"No Search Layers",		3}
+	}};
+
+	inline static std::array<std::pair<std::string_view, uint8_t>, 6> levelLengthToInteger{{
+		{"Tiny",	        1},
+		{"Short",	        2},
+		{"Medium",	        3},
+        {"Long",	        4},
+        {"XL",				5},
+		{"Platformer",		6}
 	}};
 
 	bool yeahDontEvenBother = false;
@@ -247,5 +257,12 @@ public:
 			if (oneOf == us) return unsignedInt;
 		}
 		return 0;
+	}
+
+	static uint8_t levelLengthToIntegerFetch(const std::string_view lengthString) {
+		for (const auto& [length, unsignedInt] : Manager::get()->levelLengthToInteger) {
+			if (lengthString == length) return unsignedInt;
+		}
+		return 6;
 	}
 };

@@ -228,13 +228,16 @@ namespace Utils {
 		manager->date = date.unwrapOr(-1);
 
 		for (const matjson::Value& levelEntry : unwrappedLevels) {
-			if (!levelEntry.contains("id") || !levelEntry.contains("difficultyIndex") || !levelEntry.contains("stars") || !levelEntry.contains("lists")) continue;
+			if (!levelEntry.contains("id") || !levelEntry.contains("difficultyIndex") || !levelEntry.contains("length") || !levelEntry.contains("stars") || !levelEntry.contains("lists")) continue;
 
 			auto attemptedLevelIDString = levelEntry["id"].asString();
 			if (attemptedLevelIDString.isErr()) continue;
 
 			auto difficultyIndex = levelEntry["difficultyIndex"].asInt().unwrapOr(-1);
 			if (difficultyIndex < 0) continue;
+
+			auto attemptedLength = levelEntry["length"].asString();
+			if (attemptedLength.isErr()) continue;
 
 			auto stars = levelEntry["stars"].asInt().unwrapOr(-1);
 			if (stars < 0) continue;
@@ -266,6 +269,7 @@ namespace Utils {
 			manager->levelIDInfoMap[levelID] = UsefulLevel {
 				.difficulty = difficultyIndex,
 				.starCount = stars,
+				.length = Manager::levelLengthToIntegerFetch(attemptedLength.unwrap()),
 				.numberOfLists = numberOfLists,
 				.listIDs = std::move(listIDs)
 			};
@@ -373,7 +377,7 @@ namespace Utils {
 			return;
 		}
 
-		const auto&[difficulty, starCount, numberOfLists, listIDs] = levelIDInfoMap[levelIDBeingInvestigated];
+		const auto&[difficulty, starCount, _, numberOfLists, listIDs] = levelIDInfoMap[levelIDBeingInvestigated];
 		const size_t numLists = numberOfLists;
 		std::string listOfLevels = "";
 		int claimableDiamonds = 0;
@@ -500,10 +504,15 @@ namespace Utils {
 			std::sort(seenInTheseLists.begin(), seenInTheseLists.end(), [](geode::Ref<GJLevelList>& a, geode::Ref<GJLevelList>& b) {
 				GJLevelList* lvlLstA = a.data();
 				GJLevelList* lvlLstB = b.data();
-				const uint rankA = lvlLstA && !GameStatsManager::get()->hasClaimedListReward(lvlLstA) ? std::clamp<uint>(lvlLstA->m_levelsToClaim - lvlLstA->completedLevels(), 0, lvlLstA->m_levelsToClaim) : 0;
-				const uint rankB = lvlLstB && !GameStatsManager::get()->hasClaimedListReward(lvlLstB) ? std::clamp<uint>(lvlLstB->m_levelsToClaim - lvlLstB->completedLevels(), 0, lvlLstB->m_levelsToClaim) : 0;
+				const bool claimedA = lvlLstA ? GameStatsManager::get()->hasClaimedListReward(lvlLstA) : false;
+				const bool claimedB = lvlLstB ? GameStatsManager::get()->hasClaimedListReward(lvlLstB) : false;
+				const uint rankA = lvlLstA && !claimedA ? std::clamp<uint>(lvlLstA->m_levelsToClaim - lvlLstA->completedLevels(), 0, lvlLstA->m_levelsToClaim) : 0;
+				const uint rankB = lvlLstB && !claimedB ? std::clamp<uint>(lvlLstB->m_levelsToClaim - lvlLstB->completedLevels(), 0, lvlLstB->m_levelsToClaim) : 0;
 				if (rankA != rankB) return rankA > rankB;
-				return ((lvlLstA ? std::clamp<uint>(lvlLstA->totalLevels() - lvlLstA->completedLevels(), 0, lvlLstA->totalLevels()) : 0)) > ((lvlLstB ? std::clamp<uint>(lvlLstB->totalLevels() - lvlLstB->completedLevels(), 0, lvlLstB->totalLevels()) : 0));
+				const uint rankC = lvlLstA && claimedA ? std::clamp<uint>(lvlLstA->totalLevels() - lvlLstA->completedLevels(), 0, lvlLstA->totalLevels()) : lvlLstA->m_diamonds;
+				const uint rankD = lvlLstB && claimedB ? std::clamp<uint>(lvlLstB->totalLevels() - lvlLstB->completedLevels(), 0, lvlLstB->totalLevels()) : lvlLstB->m_diamonds;
+				if (rankC != rankD) return rankC > rankD;
+				return (lvlLstA ? lvlLstA->m_downloads : 0) > (lvlLstB ? lvlLstA->m_downloads : 0);
 			});
 		}
 
@@ -559,15 +568,20 @@ namespace Utils {
 		if (manager->sortLevelIDsByNumberOfListsTheyAppearIn) {
 			std::sort(levelIDs.begin(), levelIDs.end(), [](const int& a, const int& b) {
 				const Manager* managerLambda = Manager::get();
-				const size_t rankA = managerLambda->levelIDInfoMap.contains(a) ? managerLambda->levelIDInfoMap.at(a).numberOfLists : 0;
-				const size_t rankB = managerLambda->levelIDInfoMap.contains(b) ? managerLambda->levelIDInfoMap.at(b).numberOfLists : 0;
+				const bool containsA = managerLambda->levelIDInfoMap.contains(a);
+				const bool containsB = managerLambda->levelIDInfoMap.contains(b);
+				const size_t rankA = containsA ? managerLambda->levelIDInfoMap.at(a).numberOfLists : 0;
+				const size_t rankB = containsB ? managerLambda->levelIDInfoMap.at(b).numberOfLists : 0;
 				if (rankA != rankB) return rankA > rankB;
-				const intmax_t rankC = managerLambda->levelIDInfoMap.contains(a) ? managerLambda->levelIDInfoMap.at(a).starCount : 10;
-				const intmax_t rankD = managerLambda->levelIDInfoMap.contains(b) ? managerLambda->levelIDInfoMap.at(b).starCount : 10;
+				const intmax_t rankC = containsA ? managerLambda->levelIDInfoMap.at(a).starCount : 10;
+				const intmax_t rankD = containsB ? managerLambda->levelIDInfoMap.at(b).starCount : 10;
 				if (rankC != rankD) return rankC > rankD;
-				const intmax_t rankE = managerLambda->levelIDInfoMap.contains(a) ? managerLambda->levelIDInfoMap.at(a).difficulty : 10;
-				const intmax_t rankF = managerLambda->levelIDInfoMap.contains(b) ? managerLambda->levelIDInfoMap.at(b).difficulty : 10;
+				const intmax_t rankE = containsA ? managerLambda->levelIDInfoMap.at(a).difficulty : 10;
+				const intmax_t rankF = containsB ? managerLambda->levelIDInfoMap.at(b).difficulty : 10;
 				if (rankE != rankF) return rankE > rankF;
+				const intmax_t rankG = containsA ? managerLambda->levelIDInfoMap.at(a).length : 6;
+				const intmax_t rankH = containsB ? managerLambda->levelIDInfoMap.at(b).length : 6;
+				if (rankG != rankH) return rankG > rankH;
 				return a < b;
 			});
 		}
