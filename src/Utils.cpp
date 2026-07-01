@@ -279,7 +279,7 @@ namespace Utils {
 				.starCount = stars,
 				.length = Manager::levelLengthToIntegerFetch(attemptedLength.unwrap()),
 				.numberOfLists = numberOfLists,
-				.listIDs = std::move(listIDs),
+				.levelListIndicies = std::move(listIDs),
 				.gauntletName = gauntletName,
 				.gauntletIndex = gauntletIndex,
 				.mapPackName = mapPackName,
@@ -441,7 +441,7 @@ namespace Utils {
 				.starCount = 11,
 				.length = 7,
 				.numberOfLists = 3,
-				.listIDs = {}
+				.levelListIndicies = {}
 			};
 
 			const UsefulLevel& levelInfoA = containsA ? managerLambda->levelIDInfoMap.at(a) : dummyStruct;
@@ -508,10 +508,12 @@ namespace Utils {
 		int completedLists = 0;
 		int claimableLists = 0;
 
-		for (int listID : structuredBindingsCanFuckRightTheFuckOff.listIDs) {
-			if (listID < 0 || listIDInfoMap.size() < listID) continue;
+		for (const int levelListIndicies : structuredBindingsCanFuckRightTheFuckOff.levelListIndicies) {
+			if (levelListIndicies < 0 || listIDInfoMap.size() <= levelListIndicies) continue;
 
-			const UsefulList& listEntry = listIDInfoMap.at(listID);
+			const UsefulList& listEntry = listIDInfoMap.at(levelListIndicies);
+			if (!manager->levelLists.contains(listEntry.listID)) continue;
+
 			geode::Ref<GJLevelList> listRef = manager->levelLists[listEntry.listID];
 			GJLevelList* levelList = listRef.data();
 

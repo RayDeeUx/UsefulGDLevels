@@ -94,7 +94,7 @@ struct UsefulLevel {
 	intmax_t starCount;
 	int length;
 	size_t numberOfLists;
-	std::vector<int> listIDs;
+	std::vector<int> levelListIndicies;
 	std::string gauntletName = "";
 	intmax_t gauntletIndex = -1;
 	std::string mapPackName = "";
