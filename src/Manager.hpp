@@ -99,6 +99,7 @@ struct UsefulLevel {
 	intmax_t gauntletIndex = -1;
 	std::string mapPackName = "";
 	intmax_t mapPackIndex = -1;
+	intmax_t mapPackArrayIndex = -1;
 };
 
 struct UsefulList {

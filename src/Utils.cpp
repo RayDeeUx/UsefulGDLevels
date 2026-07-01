@@ -255,13 +255,18 @@ namespace Utils {
 			if (lists.empty()) continue;
 
 			std::vector<int> listIndicies {};
+			const size_t unwrappedListsSize = unwrappedLists.size();
+			intmax_t mapPackArrayIndex = -1;
 
 			for (const matjson::Value& levelListIndexUnwrapped : lists) {
 				auto levelListIndex = levelListIndexUnwrapped.asInt().unwrapOr(-1);
 				if (levelListIndex < 1) continue;
 
-				if (unwrappedLists.size() <= levelListIndex) continue;
-				if (unwrappedLists.at(levelListIndex).contains("mapPack")) continue;
+				if (unwrappedListsSize <= levelListIndex) continue;
+				if (unwrappedLists.at(levelListIndex).contains("mapPack") && mapPackArrayIndex < 0) {
+					mapPackArrayIndex = std::abs(static_cast<int>(unwrappedListsSize - levelListIndex));
+					continue;
+				}
 
 				listIndicies.push_back(levelListIndex);
 			}
@@ -287,6 +292,7 @@ namespace Utils {
 				.gauntletIndex = gauntletIndex,
 				.mapPackName = mapPackName,
 				.mapPackIndex = mapPackIndex,
+				.mapPackArrayIndex = mapPackArrayIndex
 			};
 		}
 
