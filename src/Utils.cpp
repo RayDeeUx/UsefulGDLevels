@@ -503,17 +503,36 @@ namespace Utils {
 		if (manager->sortListIDsByNumberOfListsTheyAppearIn) {
 			std::sort(seenInTheseLists.begin(), seenInTheseLists.end(), [](geode::Ref<GJLevelList>& a, geode::Ref<GJLevelList>& b) {
 				const int uIntMax = std::numeric_limits<int>::max();
+
 				GJLevelList* lvlLstA = a.data();
 				GJLevelList* lvlLstB = b.data();
+				const int completedA = lvlLstA->completedLevels();
+				const int completedB = lvlLstB->completedLevels();
+				const int totalLevelsA = lvlLstA->totalLevels();
+				const int totalLevelsB = lvlLstB->totalLevels();
+
 				const bool claimedA = lvlLstA ? GameStatsManager::get()->hasClaimedListReward(lvlLstA) : false;
 				const bool claimedB = lvlLstB ? GameStatsManager::get()->hasClaimedListReward(lvlLstB) : false;
-				const int rankA = lvlLstA && !claimedA ? std::clamp<int>(lvlLstA->m_levelsToClaim - lvlLstA->completedLevels(), 0, lvlLstA->m_levelsToClaim) : uIntMax;
-				const int rankB = lvlLstB && !claimedB ? std::clamp<int>(lvlLstB->m_levelsToClaim - lvlLstB->completedLevels(), 0, lvlLstB->m_levelsToClaim) : uIntMax;
-				if (rankA != rankB) return rankA < rankB;
-				const int rankC = lvlLstA && claimedA ? std::clamp<int>(lvlLstA->totalLevels() - lvlLstA->completedLevels(), 0, lvlLstA->totalLevels()) : lvlLstA ? lvlLstA->m_diamonds : uIntMax;
-				const int rankD = lvlLstB && claimedB ? std::clamp<int>(lvlLstB->totalLevels() - lvlLstB->completedLevels(), 0, lvlLstB->totalLevels()) : lvlLstB ? lvlLstB->m_diamonds : uIntMax;
-				if (rankC != rankD) return rankC < rankD;
-				return (lvlLstA ? lvlLstA->m_downloads : uIntMax) < (lvlLstB ? lvlLstA->m_downloads : uIntMax);
+				const int levelsLeftToClaimA = lvlLstA && !claimedA ? std::clamp<int>(lvlLstA->m_levelsToClaim - completedA, 0, lvlLstA->m_levelsToClaim) : uIntMax;
+				const int levelsLeftToClaimB = lvlLstB && !claimedB ? std::clamp<int>(lvlLstB->m_levelsToClaim - completedB, 0, lvlLstB->m_levelsToClaim) : uIntMax;
+				const bool completedButNotClaimedA = levelsLeftToClaimA == 0 && (lvlLstA ? !GameStatsManager::get()->hasClaimedListReward(lvlLstA) : false);
+				const bool completedButNotClaimedB = levelsLeftToClaimB == 0 && (lvlLstB ? !GameStatsManager::get()->hasClaimedListReward(lvlLstB) : false);
+				const int diamondsA = lvlLstA ? lvlLstA->m_diamonds : uIntMax;
+				const int diamondsB = lvlLstB ? lvlLstB->m_diamonds : uIntMax;
+				const int levelsLeftBeforeFullA = lvlLstA && claimedA ? std::clamp<int>(totalLevelsA - completedA, 0, totalLevelsA) : uIntMax;
+				const int levelsLeftBeforeFullB = lvlLstB && claimedB ? std::clamp<int>(totalLevelsB - completedB, 0, totalLevelsB) : uIntMax;
+				const int downloadsA = lvlLstA ? lvlLstA->m_downloads : uIntMax;
+				const int downloadsB = lvlLstB ? lvlLstB->m_downloads : uIntMax;
+				const int listIDA = lvlLstA ? lvlLstA->m_listID : uIntMax;
+				const int listIDB = lvlLstB ? lvlLstB->m_listID : uIntMax;
+
+				if (claimedA != claimedB) return claimedB;
+				if (completedButNotClaimedA != completedButNotClaimedB) return completedButNotClaimedA;
+				if (levelsLeftToClaimA != levelsLeftToClaimB) return levelsLeftToClaimA < levelsLeftToClaimB;
+				if (diamondsA != diamondsB) return diamondsA > diamondsB;
+				if (levelsLeftBeforeFullA != levelsLeftBeforeFullB) return levelsLeftBeforeFullA < levelsLeftBeforeFullB;
+				if (downloadsA != downloadsB) return downloadsA > downloadsB;
+				return listIDA > listIDB;
 			});
 		}
 
