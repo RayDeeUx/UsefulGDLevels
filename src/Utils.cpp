@@ -535,11 +535,21 @@ namespace Utils {
 			#endif
 			if (theLevelList->completedLevels() < theLevelList->m_levelsToClaim) levelsTotal += levelIDsFromTheList.size();
 
-			for (const int levelIDFromList : levelIDsFromTheList) {
-				if (levelsSoFar >= MAX_LEVELS) break;
-				if (std::ranges::find(levelIDs.begin(), levelIDs.end(), levelIDFromList) != levelIDs.end()) continue;
-				levelIDs.push_back(levelIDFromList);
-				levelsSoFar += 1;
+			if (!manager->sortLevelIDsByNumberOfListsTheyAppearIn) {
+				for (const int levelIDFromList : levelIDsFromTheList) {
+					if (levelsSoFar >= MAX_LEVELS) break;
+					if (std::ranges::find(levelIDs.begin(), levelIDs.end(), levelIDFromList) != levelIDs.end()) continue;
+					levelIDs.push_back(levelIDFromList);
+					levelsSoFar++;
+				}
+			} else {
+				for (const auto& [levelIDFromSortedByFrequency, _] : manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn) {
+					if (levelsSoFar >= MAX_LEVELS) break;
+					if (std::ranges::find(manager->completedLevelIDs.begin(), manager->completedLevelIDs.end(), levelIDFromSortedByFrequency) != manager->completedLevelIDs.end()) continue;
+					if (std::ranges::find(levelIDsFromTheList.begin(), levelIDsFromTheList.end(), levelIDFromSortedByFrequency) == levelIDsFromTheList.end()) continue;
+					levelIDs.push_back(static_cast<int>(levelIDFromSortedByFrequency));
+					levelsSoFar++;
+				}
 			}
 		}
 		const std::string& levelIDsJoined = fmt::format("{}", fmt::join(levelIDs.begin(), levelIDs.end(), ","));CCScene* scene = CCScene::create();

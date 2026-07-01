@@ -366,6 +366,7 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 		auto& levelIDInfoMap = manager->levelIDInfoMap;
 		if (!manager->sortLevelIDsByNumberOfListsTheyAppearIn) {
 			for (const auto& [levelID, info] : levelIDInfoMap) {
+				if (!levelIDInfoMap.contains(levelID)) continue;
 				total++;
 				if (std::ranges::find(manager->completedLevelIDs.begin(), manager->completedLevelIDs.end(), levelID) != manager->completedLevelIDs.end()) continue;
 				if (manager->maxDifficulty < 11 && static_cast<UsefulLevel>(info).difficulty >= manager->maxDifficulty) continue;
@@ -376,7 +377,7 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 			}
 		} else {
 			for (const auto& [levelID, _] : manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn) {
-				if (!levelIDInfoMap.contains(levelID)) continue;;
+				if (!levelIDInfoMap.contains(levelID)) continue;
 				total++;
 				auto& info = levelIDInfoMap.at(levelID);
 				if (std::ranges::find(manager->completedLevelIDs.begin(), manager->completedLevelIDs.end(), levelID) != manager->completedLevelIDs.end()) continue;
