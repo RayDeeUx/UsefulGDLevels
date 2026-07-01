@@ -550,9 +550,10 @@ namespace Utils {
 		std::string gauntletInfo = "";
 		if (!structuredBindingsCanFuckRightTheFuckOff.gauntletName.empty() && structuredBindingsCanFuckRightTheFuckOff.gauntletIndex > 0) {
 			gauntletInfo = fmt::format(
-				"\nThis level is also level #{} in the <cl>{} Gauntlet</c>!",
+				"\n\n<cl>{}</c> is also level #{} in the <cl>{} Gauntlet</c>!",
+				static_cast<std::string>(level->m_levelName),
 				structuredBindingsCanFuckRightTheFuckOff.gauntletIndex,
-				structuredBindingsCanFuckRightTheFuckOff.gauntletName.data()
+				structuredBindingsCanFuckRightTheFuckOff.gauntletName
 			);
 		}
 
@@ -561,11 +562,12 @@ namespace Utils {
 			for (const WeAllFuckingHateMapPacks& mapPack : manager->mapPackInfoList) {
 				if (mapPack.name != structuredBindingsCanFuckRightTheFuckOff.mapPackName) continue;
 				mapPackInfo = fmt::format(
-					"\nThis level is also #{} in the <c-{}>{}</c> for "
+					"\n\n<cl>{}</c> is also #{} in the <c-{}>{}</c> for "
 					"<cy>{}</c> [![stars](frame:GJ_sStarsIcon_001.png?scale=0.85)]</c> "
-					"and <cs>{}</c> [![stars](frame:GJ_coinsIcon_001.png?scale=0.5)]</c>!",
+					"and <cs>{}</c> [![coins](frame:GJ_coinsIcon_001.png?scale=0.5)]</c>!",
+					static_cast<std::string>(level->m_levelName),
 					structuredBindingsCanFuckRightTheFuckOff.mapPackIndex, mapPack.difficultyIconColor,
-					structuredBindingsCanFuckRightTheFuckOff.mapPackName.data(),
+					structuredBindingsCanFuckRightTheFuckOff.mapPackName,
 					mapPack.stars, mapPack.coins
 				);
 				break;

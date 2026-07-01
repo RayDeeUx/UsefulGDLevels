@@ -95,9 +95,9 @@ struct UsefulLevel {
 	int length;
 	size_t numberOfLists;
 	std::vector<int> listIDs;
-	std::string_view gauntletName = "";
+	std::string gauntletName = "";
 	intmax_t gauntletIndex = -1;
-	std::string_view mapPackName = "";
+	std::string mapPackName = "";
 	intmax_t mapPackIndex = -1;
 };
 
