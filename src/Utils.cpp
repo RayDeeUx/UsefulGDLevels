@@ -568,7 +568,9 @@ namespace Utils {
 					"The <c-{}>{}</c> map pack rewards <cy>{}</c> ![stars](frame:GJ_sStarsIcon_001.png?scale=0.75)</c>"
 					"and <cs>{}</c> ![coins](frame:GJ_coinsIcon_001.png?scale=0.45)</c>!",
 					static_cast<std::string>(level->m_levelName),
-					structuredBindingsCanFuckRightTheFuckOff.mapPackIndex, mapPack.difficultyIconColor,
+					structuredBindingsCanFuckRightTheFuckOff.mapPackIndex,
+					mapPack.difficultyIconColor, static_cast<std::string>(level->m_levelName),
+					mapPack.difficultyIconColor, static_cast<std::string>(level->m_levelName),
 					structuredBindingsCanFuckRightTheFuckOff.mapPackName,
 					mapPack.stars, mapPack.coins
 				);
