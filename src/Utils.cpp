@@ -511,8 +511,8 @@ namespace Utils {
 				if (rankA != rankB) return rankA > rankB;
 				const uint rankC = lvlLstA && claimedA ? std::clamp<uint>(lvlLstA->totalLevels() - lvlLstA->completedLevels(), 0, lvlLstA->totalLevels()) : lvlLstA->m_diamonds;
 				const uint rankD = lvlLstB && claimedB ? std::clamp<uint>(lvlLstB->totalLevels() - lvlLstB->completedLevels(), 0, lvlLstB->totalLevels()) : lvlLstB->m_diamonds;
-				if (rankC != rankD) return rankC > rankD;
-				return (lvlLstA ? lvlLstA->m_downloads : 0) > (lvlLstB ? lvlLstA->m_downloads : 0);
+				if (rankC != rankD) return rankC < rankD;
+				return (lvlLstA ? lvlLstA->m_downloads : 0) < (lvlLstB ? lvlLstA->m_downloads : 0);
 			});
 		}
 
@@ -576,12 +576,12 @@ namespace Utils {
 				const intmax_t rankC = containsA ? managerLambda->levelIDInfoMap.at(a).starCount : 10;
 				const intmax_t rankD = containsB ? managerLambda->levelIDInfoMap.at(b).starCount : 10;
 				if (rankC != rankD) return rankC > rankD;
+				const int rankG = containsA ? managerLambda->levelIDInfoMap.at(a).length : 6;
+				const int rankH = containsB ? managerLambda->levelIDInfoMap.at(b).length : 6;
+				if (rankG != rankH) return rankG > rankH;
 				const intmax_t rankE = containsA ? managerLambda->levelIDInfoMap.at(a).difficulty : 10;
 				const intmax_t rankF = containsB ? managerLambda->levelIDInfoMap.at(b).difficulty : 10;
 				if (rankE != rankF) return rankE > rankF;
-				const intmax_t rankG = containsA ? managerLambda->levelIDInfoMap.at(a).length : 6;
-				const intmax_t rankH = containsB ? managerLambda->levelIDInfoMap.at(b).length : 6;
-				if (rankG != rankH) return rankG > rankH;
 				return a < b;
 			});
 		}
