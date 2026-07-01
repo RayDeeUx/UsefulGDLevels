@@ -404,8 +404,8 @@ namespace Utils {
 			log::info("a < b: {}", a < b);
 
 			if (numberOfListsA != numberOfListsB) return numberOfListsA > numberOfListsB;
-			if (starMoonCountA != starMoonCountB) return starMoonCountA < starMoonCountB;
 			if (lengthA != lengthB) return lengthA < lengthB;
+			if (starMoonCountA != starMoonCountB) return starMoonCountA < starMoonCountB;
 			if (difficultyA != difficultyB) return difficultyA < difficultyB;
 			return a < b;
 		});
