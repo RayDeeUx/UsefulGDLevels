@@ -254,16 +254,19 @@ namespace Utils {
 			auto lists = attemptedListArray.unwrap();
 			if (lists.empty()) continue;
 
-			std::vector<int> listIDs {};
+			std::vector<int> listIndicies {};
 
-			for (const matjson::Value& listIDEntry : lists) {
-				auto listIDInt = listIDEntry.asInt().unwrapOr(-1);
-				if (listIDInt < 1) continue;
+			for (const matjson::Value& levelListIndexUnwrapped : lists) {
+				auto levelListIndex = levelListIndexUnwrapped.asInt().unwrapOr(-1);
+				if (levelListIndex < 1) continue;
 
-				listIDs.push_back(listIDInt);
+				if (unwrappedLists.size() >= levelListIndex) continue;
+				if (unwrappedLists.at(levelListIndex).contains("mapPack")) continue;
+
+				listIndicies.push_back(levelListIndex);
 			}
 
-			const size_t numberOfLists = listIDs.size();
+			const size_t numberOfLists = listIndicies.size();
 			manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn.push_back({levelID, numberOfLists});
 
 			const bool canParseGauntlet = levelEntry.contains("gauntlet") && levelEntry["gauntlet"].contains("name") && levelEntry["gauntlet"].contains("index") && levelEntry["gauntlet"]["name"].asString().isOk() && levelEntry["gauntlet"]["index"].asInt().isOk();
@@ -279,7 +282,7 @@ namespace Utils {
 				.starCount = stars,
 				.length = Manager::levelLengthToIntegerFetch(attemptedLength.unwrap()),
 				.numberOfLists = numberOfLists,
-				.levelListIndicies = std::move(listIDs),
+				.levelListIndicies = std::move(listIndicies),
 				.gauntletName = gauntletName,
 				.gauntletIndex = gauntletIndex,
 				.mapPackName = mapPackName,
@@ -293,7 +296,7 @@ namespace Utils {
 			if (listEntry.contains("mapPack") || !listEntry.contains("id") || !listEntry.contains("name") || !listEntry.contains("author") || !listEntry.contains("levels") || !listEntry.contains("difficulty") || !listEntry.contains("diamonds") || !listEntry.contains("levelsRequired")) continue;
 
 			auto attemptedListIDString = listEntry["id"].asString();
-			if (attemptedListIDString.isErr()) continue;
+			if (attemptedListIDString.isErr() || attemptedListIDString.unwrap().empty()) continue;
 
 			auto name = listEntry["name"].asString();
 			if (name.isErr() || name.unwrap().empty()) continue;
@@ -302,7 +305,7 @@ namespace Utils {
 			if (author.isErr() || author.unwrap().empty()) continue;
 
 			auto attemptedLevelArray = listEntry["levels"].asArray();
-			if (attemptedLevelArray.isErr()) continue;
+			if (attemptedLevelArray.isErr() || attemptedLevelArray.unwrap().empty()) continue;
 
 			auto difficulty = listEntry["difficulty"].asString();
 			if (difficulty.isErr() || difficulty.unwrap().empty()) continue;
