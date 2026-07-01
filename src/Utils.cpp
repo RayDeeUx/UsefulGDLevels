@@ -359,6 +359,58 @@ namespace Utils {
 		log::info("manager->listsToLevelIDs: {}", manager->listIDInfoList.size());
 	}
 
+	void sortLevelIDsByListFrequencyAndOtherTiebreakers(std::vector<int>& levelIDs) {
+		std::sort(levelIDs.begin(), levelIDs.end(), [](const int& a, const int& b) {
+			const Manager* managerLambda = Manager::get();
+			const bool containsA = managerLambda->levelIDInfoMap.contains(a);
+			const bool containsB = managerLambda->levelIDInfoMap.contains(b);
+
+			const UsefulLevel dummyStruct = UsefulLevel{
+				.difficulty = 11,
+				.starCount = 11,
+				.length = 7,
+				.numberOfLists = 3,
+				.listIDs = {}
+			};
+
+			const UsefulLevel& levelInfoA = containsA ? managerLambda->levelIDInfoMap.at(a) : dummyStruct;
+			const UsefulLevel& levelInfoB = containsB ? managerLambda->levelIDInfoMap.at(b) : dummyStruct;
+
+			const size_t numberOfListsA = levelInfoA.numberOfLists;
+			const size_t numberOfListsB = levelInfoB.numberOfLists;
+			const intmax_t starMoonCountA = levelInfoA.starCount;
+			const intmax_t starMoonCountB = levelInfoB.starCount;
+			const intmax_t difficultyA = levelInfoA.difficulty;
+			const intmax_t difficultyB = levelInfoB.difficulty;
+			const int lengthA = levelInfoA.length;
+			const int lengthB = levelInfoB.length;
+
+			log::info("numberOfListsA: {}", numberOfListsA);
+			log::info("starMoonCountA: {}", starMoonCountA);
+			log::info("lengthA: {}", lengthA);
+			log::info("difficultyA: {}", difficultyA);
+			log::info("a: {}", a);
+
+			log::info("numberOfListsB: {}", numberOfListsB);
+			log::info("starMoonCountB: {}", starMoonCountB);
+			log::info("lengthB: {}", lengthB);
+			log::info("difficultyB: {}", difficultyB);
+			log::info("b: {}", b);
+
+			log::info("numberOfListsA > numberOfListsB: {}", numberOfListsA > numberOfListsB);
+			log::info("starMoonCountA < starMoonCountB: {}", starMoonCountA < starMoonCountB);
+			log::info("lengthA < lengthB: {}", lengthA < lengthB);
+			log::info("difficultyA < difficultyB: {}", difficultyA < difficultyB);
+			log::info("a < b: {}", a < b);
+
+			if (numberOfListsA != numberOfListsB) return numberOfListsA > numberOfListsB;
+			if (starMoonCountA != starMoonCountB) return starMoonCountA < starMoonCountB;
+			if (lengthA != lengthB) return lengthA < lengthB;
+			if (difficultyA != difficultyB) return difficultyA < difficultyB;
+			return a < b;
+		});
+	}
+
 	void showUsefulLevelInfo(GJGameLevel* level) {
 		if (!level) return;
 
@@ -557,7 +609,6 @@ namespace Utils {
 		CCDirector::sharedDirector()->pushScene(transitionFade);
 	}
 
-
 	void showTheLevelsInsideTheLists() {
 		Manager* manager = Manager::get();
 		if (manager->notBisexualAtAll || !manager->enabled || manager->yeahDontEvenBother) return;
@@ -586,39 +637,7 @@ namespace Utils {
 			}
 		}
 
-		if (manager->sortLevelIDsByNumberOfListsTheyAppearIn) {
-			std::sort(levelIDs.begin(), levelIDs.end(), [](const int& a, const int& b) {
-				const Manager* managerLambda = Manager::get();
-				const bool containsA = managerLambda->levelIDInfoMap.contains(a);
-				const bool containsB = managerLambda->levelIDInfoMap.contains(b);
-
-				const UsefulLevel dummyStruct = UsefulLevel{
-					.difficulty = 11,
-					.starCount = 11,
-					.length = 7,
-					.numberOfLists = 3,
-					.listIDs = {}
-				};
-
-				const UsefulLevel& levelInfoA = containsA ? managerLambda->levelIDInfoMap.at(a) : dummyStruct;
-				const UsefulLevel& levelInfoB = containsB ? managerLambda->levelIDInfoMap.at(b) : dummyStruct;
-
-				const size_t numberOfListsA = levelInfoA.numberOfLists;
-				const size_t numberOfListsB = levelInfoB.numberOfLists;
-				const intmax_t starMoonCountA = levelInfoA.starCount;
-				const intmax_t starMoonCountB = levelInfoB.starCount;
-				const intmax_t difficultyA = levelInfoA.difficulty;
-				const intmax_t difficultyB = levelInfoB.difficulty;
-				const int lengthA = levelInfoA.length;
-				const int lengthB = levelInfoB.length;
-
-				if (numberOfListsA != numberOfListsB) return numberOfListsA > numberOfListsB;
-				if (lengthA != lengthB) return lengthA < lengthB;
-				if (starMoonCountA != starMoonCountB) return starMoonCountA < starMoonCountB;
-				if (difficultyA != difficultyB) return difficultyA < difficultyB;
-				return a < b;
-			});
-		}
+		if (manager->sortLevelIDsByNumberOfListsTheyAppearIn) Utils::sortLevelIDsByListFrequencyAndOtherTiebreakers(levelIDs);
 
 		const std::string& levelIDsJoined = fmt::format("{}", fmt::join(levelIDs.begin(), levelIDs.end(), ","));CCScene* scene = CCScene::create();
 

@@ -274,7 +274,7 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
 		tempLabel->setScale(.5f);
 		tempLabel->setID("useful-levels-label"_spr);
 
-		CircleButtonSprite* sprite = CircleButtonSprite::createWithSprite("logo.png"_spr, 1.f, CircleBaseColor::Cyan, CircleBaseSize::SmallAlt);
+		CircleButtonSprite* sprite = CircleButtonSprite::createWithSprite("logo.png"_spr, 1.f, CircleBaseColor::Cyan, CircleBaseSize::Small);
 		sprite->addChildAtPosition(tempLabel, Anchor::BottomRight, {-12.5f, 12.5f});
 		sprite->setID("useful-levels-sprite"_spr);
 
@@ -391,6 +391,7 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
 				i++;
 				if (i > MAX_LEVELS - 1) break;
 			}
+			Utils::sortLevelIDsByListFrequencyAndOtherTiebreakers(levelIDs);
 		}
 		const std::string& levelIDsJoined = fmt::format("{}", fmt::join(levelIDs.begin(), levelIDs.end(), ","));
 

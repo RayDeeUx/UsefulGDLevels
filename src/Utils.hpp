@@ -63,6 +63,8 @@ namespace Utils {
 	void fetchFromTheColon();
 	void parseColonResponse(const geode::utils::web::WebResponse& response);
 
+	void sortLevelIDsByListFrequencyAndOtherTiebreakers(std::vector<int>& levelIDs);
+
 	void showUsefulLevelInfo(GJGameLevel* level);
 
 	void showTheLists();
