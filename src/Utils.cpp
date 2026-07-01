@@ -260,7 +260,7 @@ namespace Utils {
 				auto levelListIndex = levelListIndexUnwrapped.asInt().unwrapOr(-1);
 				if (levelListIndex < 1) continue;
 
-				if (unwrappedLists.size() >= levelListIndex) continue;
+				if (unwrappedLists.size() <= levelListIndex) continue;
 				if (unwrappedLists.at(levelListIndex).contains("mapPack")) continue;
 
 				listIndicies.push_back(levelListIndex);
