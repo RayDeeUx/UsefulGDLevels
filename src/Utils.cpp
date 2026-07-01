@@ -560,16 +560,11 @@ namespace Utils {
 		std::string mapPackInfo = "";
 		if (!structuredBindingsCanFuckRightTheFuckOff.mapPackName.empty() && structuredBindingsCanFuckRightTheFuckOff.mapPackIndex > 0) {
 			for (const WeAllFuckingHateMapPacks& mapPack : manager->mapPackInfoList) {
-				log::info("mapPack.name: {}", mapPack.name);
-				log::info("structuredBindingsCanFuckRightTheFuckOff.name: {}", structuredBindingsCanFuckRightTheFuckOff.mapPackName);
-				log::info("mapPack.name == structuredBindingsCanFuckRightTheFuckOff.mapPackName: {}", mapPack.name == structuredBindingsCanFuckRightTheFuckOff.mapPackName);
-				if (mapPack.name != structuredBindingsCanFuckRightTheFuckOff.mapPackName) {
-					continue;
-				}
+				if (mapPack.name != structuredBindingsCanFuckRightTheFuckOff.mapPackName) continue;
 				mapPackInfo = fmt::format(
-					"\n\n<cl>{}</c> is also #{} in the <c-{}>{}</c> for "
-					"<cy>{}</c> [![stars](frame:GJ_sStarsIcon_001.png?scale=0.85)]</c> "
-					"and <cs>{}</c> [![coins](frame:GJ_coinsIcon_001.png?scale=0.5)]</c>!",
+					"\n\n<cl>{}</c> is also level #{} in the <c-{}>{}</c> map pack ("
+					"<cy>{}</c> ![stars](frame:GJ_sStarsIcon_001.png?scale=0.75)</c>, "
+					"<cs>{}</c> ![coins](frame:GJ_coinsIcon_001.png?scale=0.5)</c>)!",
 					static_cast<std::string>(level->m_levelName),
 					structuredBindingsCanFuckRightTheFuckOff.mapPackIndex, mapPack.difficultyIconColor,
 					structuredBindingsCanFuckRightTheFuckOff.mapPackName,
