@@ -69,7 +69,7 @@
 			"name": "Hide Completed Levels When Showing Individual Levels From Level Lists",
 			"description": "When pressing \"Show Levels\" to view levels from lists you haven't fully completed hide <c-ff0000>***__(MOST)__***</c> levels you've already completed.",
 			"type": "bool",
-			"default": true,
+			"default": false,
 			"enable-if": "enabled && !openAsLevelLists"
 		},
 		"sortLevelIDsByNumberOfListsTheyAppearIn": {
