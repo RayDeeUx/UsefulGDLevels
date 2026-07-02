@@ -448,10 +448,12 @@ namespace Utils {
 		manager->busyCalculatingTheLevelIDListForLevelIDsThatAppearThreeOrFewerTimes = true;
 		std::thread([]() {
 			Manager* threadedManager = Manager::get();
+			std::vector<intmax_t>& infrequent = threadedManager->levelIDListForLevelIDsThatAppearThreeOrFewerTimes;
 			for (const UsefulList& list : threadedManager->listIDInfoList) {
 				for (const intmax_t levelID : list.levelIDs) {
 					if (threadedManager->levelIDInfoMap.contains(levelID)) continue;
-					threadedManager->levelIDListForLevelIDsThatAppearThreeOrFewerTimes.push_back(levelID);
+					if (std::ranges::find(infrequent.begin(), infrequent.end(), levelID) != infrequent.end()) continue;
+					infrequent.push_back(levelID);
 				}
 			}
 			log::info("threadedManager->levelIDListForLevelIDsThatAppearThreeOrFewerTimes.size(): {}", threadedManager->levelIDListForLevelIDsThatAppearThreeOrFewerTimes.size());
