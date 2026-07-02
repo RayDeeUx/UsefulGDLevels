@@ -205,6 +205,8 @@ public:
 	bool track = false;
 	bool preventRecursion = false;
 
+	bool busyCalculatingTheLevelIDListForLevelIDsThatAppearThreeOrFewerTimes = false;
+
 	bool enabled = false;
 	bool openAsLevelLists = false;
 	bool addButtonToLevelCells = false;
@@ -221,6 +223,7 @@ public:
 	std::vector<intmax_t> completedListIDs = {};
 	std::vector<intmax_t> completedLevelIDs = {};
 
+	std::vector<intmax_t> levelIDListForLevelIDsThatAppearThreeOrFewerTimes = {};
 	std::unordered_map<intmax_t, UsefulLevel> levelIDInfoMap = {};
 	std::vector<WeAllFuckingHateMapPacks> mapPackInfoList = {};
 	std::vector<UsefulList> listIDInfoList = {};

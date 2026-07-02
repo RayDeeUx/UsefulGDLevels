@@ -126,7 +126,7 @@ namespace Utils {
 	}
 
 	void fetchFromTheColon() {
-		if (Manager::get()->notBisexualAtAll) return;
+		if (Manager::get()->notBisexualAtAll || Manager::get()->busyCalculatingTheLevelIDListForLevelIDsThatAppearThreeOrFewerTimes) return;
 		geode::utils::web::WebRequest request = geode::utils::web::WebRequest();
 		Manager::get()->listener.spawn(
 			request.get("https://gdcolon.com/usefulgdlevels/levels.json"),
@@ -221,6 +221,7 @@ namespace Utils {
 		manager->mapPackCutoffIndex = 0;
 		manager->yeahDontEvenBother = false;
 		if (!manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn.empty()) manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn.clear();
+		if (!manager->levelIDListForLevelIDsThatAppearThreeOrFewerTimes.empty()) manager->levelIDListForLevelIDsThatAppearThreeOrFewerTimes.clear();
 		if (!manager->completedLevelIDs.empty()) manager->completedLevelIDs.clear();
 		if (!manager->completedListIDs.empty()) manager->completedListIDs.clear();
 		if (!manager->levelIDInfoMap.empty()) manager->levelIDInfoMap.clear();
@@ -443,6 +444,19 @@ namespace Utils {
 		log::info("manager->completedListIDs: {}", manager->completedListIDs.size());
 		log::info("manager->levelIDsToLists: {}", manager->levelIDInfoMap.size());
 		log::info("manager->listsToLevelIDs: {}", manager->listIDInfoList.size());
+
+		manager->busyCalculatingTheLevelIDListForLevelIDsThatAppearThreeOrFewerTimes = true;
+		std::thread([]() {
+			Manager* threadedManager = Manager::get();
+			for (const UsefulList& list : threadedManager->listIDInfoList) {
+				for (const intmax_t levelID : list.levelIDs) {
+					if (threadedManager->levelIDInfoMap.contains(levelID)) continue;
+					threadedManager->levelIDListForLevelIDsThatAppearThreeOrFewerTimes.push_back(levelID);
+				}
+			}
+			log::info("threadedManager->levelIDListForLevelIDsThatAppearThreeOrFewerTimes.size(): {}", threadedManager->levelIDListForLevelIDsThatAppearThreeOrFewerTimes.size());
+			threadedManager->busyCalculatingTheLevelIDListForLevelIDsThatAppearThreeOrFewerTimes = false;
+		}).detach();
 	}
 
 	void sortLevelIDsByListFrequencyAndOtherTiebreakers(std::vector<int>& levelIDs) {
