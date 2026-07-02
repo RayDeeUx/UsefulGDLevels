@@ -212,6 +212,8 @@ public:
 	bool sortListIDsByNumberOfListsTheyAppearIn = false;
 	bool sortLevelIDsByNumberOfListsTheyAppearIn = false;
 
+	int mapPackCutoffIndex = 0;
+
 	uint8_t maxDifficulty = 0;
 	uint8_t showShortcutOnSearchLayerType = 0;
 

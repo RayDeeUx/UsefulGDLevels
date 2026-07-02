@@ -218,6 +218,7 @@ namespace Utils {
 		}
 
 		manager->date = -1;
+		manager->mapPackCutoffIndex = 0;
 		manager->yeahDontEvenBother = false;
 		if (!manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn.empty()) manager->colonWantedToSortLevelIDsByNumberOfListsTheyAppearIn.clear();
 		if (!manager->completedLevelIDs.empty()) manager->completedLevelIDs.clear();
@@ -264,7 +265,7 @@ namespace Utils {
 
 				if (unwrappedListsSize <= levelListIndex) continue;
 				if (unwrappedLists.at(levelListIndex).contains("mapPack") && mapPackArrayIndex < 0) {
-					mapPackArrayIndex = std::abs(static_cast<int>(unwrappedListsSize - levelListIndex));
+					mapPackArrayIndex = levelListIndex;
 					continue;
 				}
 
@@ -369,7 +370,12 @@ namespace Utils {
 		}
 
 		for (const matjson::Value& apparentlyMapPacksExistHereToo : unwrappedLists) {
-			if (!apparentlyMapPacksExistHereToo.contains("mapPack") || !apparentlyMapPacksExistHereToo.contains("id") || !apparentlyMapPacksExistHereToo.contains("name") || !apparentlyMapPacksExistHereToo.contains("levels") || !apparentlyMapPacksExistHereToo.contains("stars") || !apparentlyMapPacksExistHereToo.contains("coins") || !apparentlyMapPacksExistHereToo.contains("difficulty")) continue;
+			if (!apparentlyMapPacksExistHereToo.contains("mapPack")) {
+				manager->mapPackCutoffIndex++;
+				continue;
+			}
+
+			if (!apparentlyMapPacksExistHereToo.contains("id") || !apparentlyMapPacksExistHereToo.contains("name") || !apparentlyMapPacksExistHereToo.contains("levels") || !apparentlyMapPacksExistHereToo.contains("stars") || !apparentlyMapPacksExistHereToo.contains("coins") || !apparentlyMapPacksExistHereToo.contains("difficulty")) continue;
 
 			if (!apparentlyMapPacksExistHereToo["mapPack"].asBool().unwrapOr(false)) continue;
 
@@ -569,21 +575,19 @@ namespace Utils {
 		}
 
 		std::string mapPackInfo = "";
-		if (!structuredBindingsCanFuckRightTheFuckOff.mapPackName.empty() && structuredBindingsCanFuckRightTheFuckOff.mapPackIndex > 0) {
-			for (const WeAllFuckingHateMapPacks& mapPack : manager->mapPackInfoList) {
-				if (mapPack.name != structuredBindingsCanFuckRightTheFuckOff.mapPackName) continue;
-				mapPackInfo = fmt::format(
-					"\n\n<cl>{}</c> is also level #{} in the <c-{}>{}</c> map pack.\n\n"
-					"The <c-{}>{}</c> map pack rewards <cy>{}</c> ![stars](frame:GJ_sStarsIcon_001.png?scale=0.75)</c> "
-					"and <cs>{}</c> ![coins](frame:GJ_coinsIcon_001.png?scale=0.45)</c>!",
-					static_cast<std::string>(level->m_levelName),
-					structuredBindingsCanFuckRightTheFuckOff.mapPackIndex,
-					mapPack.difficultyIconColor, structuredBindingsCanFuckRightTheFuckOff.mapPackName,
-					mapPack.difficultyIconColor, structuredBindingsCanFuckRightTheFuckOff.mapPackName,
-					mapPack.stars, mapPack.coins
-				);
-				break;
-			}
+		const int actualIndex = structuredBindingsCanFuckRightTheFuckOff.mapPackArrayIndex - manager->mapPackCutoffIndex;
+		if (!structuredBindingsCanFuckRightTheFuckOff.mapPackName.empty() && structuredBindingsCanFuckRightTheFuckOff.mapPackIndex > 0 && manager->mapPackInfoList.size() > actualIndex) {
+			const WeAllFuckingHateMapPacks& mapPack = manager->mapPackInfoList.at(actualIndex);
+			mapPackInfo = fmt::format(
+				"\n\n<cl>{}</c> is also level #{} in the <c-{}>{}</c> map pack.\n\n"
+				"The <c-{}>{}</c> map pack rewards <cy>{}</c> ![stars](frame:GJ_sStarsIcon_001.png?scale=0.75)</c> "
+				"and <cs>{}</c> ![coins](frame:GJ_coinsIcon_001.png?scale=0.45)</c>!",
+				static_cast<std::string>(level->m_levelName),
+				structuredBindingsCanFuckRightTheFuckOff.mapPackIndex,
+				mapPack.difficultyIconColor, structuredBindingsCanFuckRightTheFuckOff.mapPackName,
+				mapPack.difficultyIconColor, structuredBindingsCanFuckRightTheFuckOff.mapPackName,
+				mapPack.stars, mapPack.coins
+			);
 		}
 
 		FLAlertLayer* info {};
