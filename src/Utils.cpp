@@ -576,7 +576,7 @@ namespace Utils {
 
 		std::string mapPackInfo = "";
 		const int actualIndex = structuredBindingsCanFuckRightTheFuckOff.mapPackArrayIndex - manager->mapPackCutoffIndex;
-		if (!structuredBindingsCanFuckRightTheFuckOff.mapPackName.empty() && structuredBindingsCanFuckRightTheFuckOff.mapPackIndex > 0 && manager->mapPackInfoList.size() > actualIndex) {
+		if (!structuredBindingsCanFuckRightTheFuckOff.mapPackName.empty() && structuredBindingsCanFuckRightTheFuckOff.mapPackIndex > 0 && actualIndex > 0 && manager->mapPackInfoList.size() > actualIndex) {
 			const WeAllFuckingHateMapPacks& mapPack = manager->mapPackInfoList.at(actualIndex);
 			mapPackInfo = fmt::format(
 				"\n\n<cl>{}</c> is also level #{} in the <c-{}>{}</c> map pack.\n\n"
