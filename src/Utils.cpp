@@ -745,9 +745,11 @@ namespace Utils {
 			#endif
 			if (theLevelList->completedLevels() < theLevelList->m_levelsToClaim) levelsTotal += levelIDsFromTheList.size();
 
+			const std::vector<intmax_t>& completed = manager->completedLevelIDs;
 			for (const int levelIDFromList : levelIDsFromTheList) {
 				if (levelsSoFar >= MAX_LEVELS) break;
 				if (std::ranges::find(levelIDs.begin(), levelIDs.end(), levelIDFromList) != levelIDs.end()) continue;
+				if (manager->filterCompletedWhenViewingLevelsThatComposeTheLists && std::ranges::find(completed.begin(), completed.end(), levelIDFromList) != completed.end()) continue;
 				levelIDs.push_back(levelIDFromList);
 				levelsSoFar++;
 			}

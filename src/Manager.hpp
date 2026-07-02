@@ -211,6 +211,7 @@ public:
 	bool ignoreCompactViewCells = false;
 	bool sortListIDsByNumberOfListsTheyAppearIn = false;
 	bool sortLevelIDsByNumberOfListsTheyAppearIn = false;
+	bool filterCompletedWhenViewingLevelsThatComposeTheLists = false;
 
 	int mapPackCutoffIndex = 0;
 
